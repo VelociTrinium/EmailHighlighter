@@ -63,7 +63,7 @@ const classificationRules = [
         senders: [],
         subjects: ["congratulations", "season greetings"],
         contents: ["congratulations", "season greetings"]
-    }
+    },
     {
         id: "reddit",
         backgroundColor: "#25252176",
