@@ -9,6 +9,62 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "reddit",
+        backgroundColor: "#ff4a089f",
+        textColor: "#ececec",
+        senders: ["noreply@redditmail.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "grammarly",
+        backgroundColor: "#027e6f8a",
+        textColor: "inherit",
+        senders: ["hello@mail.grammarly.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "github",
+        backgroundColor: "#23b75c8a",
+        textColor: "inherit",
+        senders: ["edu-noreply@github.com", "noreply@github.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "patreon",
+        backgroundColor: "#f96d598a",
+        textColor: "inherit",
+        senders: ["no-reply@patreon.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "replit",
+        backgroundColor: "#f263078a",
+        textColor: "inherit",
+        senders: ["notifications@replit.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "cursor",
+        backgroundColor: "#666666a0",
+        textColor: "inherit",
+        senders: ["team@mail.cursor.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "google",
+        backgroundColor: "#488af4b0",
+        textColor: "inherit",
+        senders: ["no-reply@accounts.google.com"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "internship",
         backgroundColor: "#68eb8688",
         textColor: "inherit",
@@ -34,7 +90,7 @@ const classificationRules = [
     },
     {
         id: "moovit",
-        backgroundColor: "#7061f07f",
+        backgroundColor: "#ec822cb7",
         textColor: "inherit",
         senders: ["noreply.moovit@vit.ac.in"],
         subjects: ["Moovit", "assignment", "quiz"],
@@ -64,14 +120,7 @@ const classificationRules = [
         subjects: ["congratulations", "season greetings"],
         contents: ["congratulations", "season greetings"]
     },
-    {
-        id: "reddit",
-        backgroundColor: "#25252176",
-        textColor: "inherit",
-        senders: [],
-        subjects: ["reddit"],
-        contents: ["reddit"]
-    }
+    
 ];
 
 // ---------------- 2. DATA EXTRACTION ----------------
