@@ -64,6 +64,14 @@ const classificationRules = [
         subjects: ["congratulations", "season greetings"],
         contents: ["congratulations", "season greetings"]
     }
+    {
+        id: "reddit",
+        backgroundColor: "#25252176",
+        textColor: "inherit",
+        senders: [],
+        subjects: ["reddit"],
+        contents: ["reddit"]
+    }
 ];
 
 // ---------------- 2. DATA EXTRACTION ----------------
