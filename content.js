@@ -117,45 +117,49 @@ function getEmailCategory(data) {
 
 // ---------------- 4. HIGHLIGHT FUNCTION ----------------
 function highlightEmails() {
-    let emails = document.querySelectorAll('tr[jscontroller]:not([data-processed="true"])');
+    let emails = document.querySelectorAll('tr[jscontroller]');
 
     emails.forEach(row => {
         let emailData = extractEmailData(row);
         let matchedRule = getEmailCategory(emailData);
 
-        if (matchedRule) {
-            row.style.backgroundColor = matchedRule.backgroundColor;
-            row.style.color = matchedRule.textColor;
-            row.style.transition = "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)";
-            row.style.position = "relative";
+        if (!matchedRule) {
+            return;
+        }
 
-            let accentColor = matchedRule.backgroundColor.substring(0, 7);
-            row.style.borderLeft = `6px solid ${accentColor}`;
+        row.style.backgroundColor = matchedRule.backgroundColor;
+        row.style.color = matchedRule.textColor;
+        row.style.transition = "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)";
+        row.style.position = "relative";
 
-            let subjectEl = row.querySelector('.bog');
-            if (subjectEl) {
-                if (!subjectEl.querySelector('.custom-badge')) {
-                    const badge = document.createElement('span');
-                    badge.className = 'custom-badge';
-                    badge.innerText = matchedRule.id.toUpperCase();
+        let accentColor = matchedRule.backgroundColor.substring(0, 7);
+        row.style.borderLeft = `6px solid ${accentColor}`;
 
-                    Object.assign(badge.style, {
-                        backgroundColor: accentColor,
-                        color: matchedRule.textColor === "inherit" || matchedRule.textColor === "" ? "white" : matchedRule.textColor,
-                        fontSize: "10px",
-                        fontWeight: "bold",
-                        padding: "2px 8px",
-                        borderRadius: "10px",
-                        marginLeft: "8px",
-                        verticalAlign: "middle",
-                        display: "inline-block",
-                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-                    });
+        let subjectEl = row.querySelector('.bog');
+        if (subjectEl) {
+            if (!subjectEl.querySelector('.custom-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'custom-badge';
+                badge.innerText = matchedRule.id.toUpperCase();
 
-                    subjectEl.appendChild(badge);
-                }
+                Object.assign(badge.style, {
+                    backgroundColor: accentColor,
+                    color: matchedRule.textColor === "inherit" || matchedRule.textColor === "" ? "white" : matchedRule.textColor,
+                    fontSize: "10px",
+                    fontWeight: "bold",
+                    padding: "2px 8px",
+                    borderRadius: "10px",
+                    marginRight: "8px",
+                    verticalAlign: "middle",
+                    display: "inline-block",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                });
+
+                subjectEl.insertBefore(badge, subjectEl.firstChild);
             }
+        }
 
+        if (!row.dataset.highlightListeners) {
             row.addEventListener("mouseover", () => {
                 row.style.boxShadow = "inset 8px 0 0 0 " + accentColor + ", 0 4px 12px rgba(0,0,0,0.1)";
                 row.style.filter = "brightness(0.95)";
@@ -167,19 +171,19 @@ function highlightEmails() {
                 row.style.filter = "none";
             });
 
-            /* --- FROM CODE 2 (Expansion: Category-Specific Actions) --- */
-            /*
-            if (matchedRule.id === "irctc") {
-                row.addEventListener("click", (e) => {
-                    if (!e.target.closest('.apU, .oZ-jc')) {
-                        window.open("https://www.irctc.co.in/nget/train-search", "_blank");
-                    }
-                });
-            }
-            */
+            row.dataset.highlightListeners = "true";
         }
 
-        row.dataset.processed = "true";
+        /* --- FROM CODE 2 (Expansion: Category-Specific Actions) --- */
+        /*
+        if (matchedRule.id === "irctc") {
+            row.addEventListener("click", (e) => {
+                if (!e.target.closest('.apU, .oZ-jc')) {
+                    window.open("https://www.irctc.co.in/nget/train-search", "_blank");
+                }
+            });
+        }
+        */
     });
 }
 
