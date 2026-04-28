@@ -2,120 +2,224 @@
 const classificationRules = [
     {
         id: "irctc",
-        backgroundColor: "#000000",
+        backgroundColor: "#003366cc",
         textColor: "#ffffff",
-        senders: ["ticketadmin@irctc.co.in", "care@irctc.co.in"], 
-        subjects: ["pnr", "ticket confirmation"],
+        senders: ["@irctc.co.in", "noreply.irctc@royalsundaram.in"], 
+        subjects: [],
         contents: []
     },
     {
         id: "reddit",
-        backgroundColor: "#ff4a089f",
-        textColor: "#ececec",
-        senders: ["noreply@redditmail.com"],
+        backgroundColor: "#FF4500cc",
+        textColor: "#ffffff",
+        senders: ["@redditmail.com", "@reddit.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "linkedin",
+        backgroundColor: "#0077B5cc",
+        textColor: "#ffffff",
+        senders: ["@linkedin.com", "messages-noreply@linkedin.com", "linkedin@em.linkedin.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "indeed",
+        backgroundColor: "#2557A7cc",
+        textColor: "#ffffff",
+        senders: ["no-reply@indeed.com", "donotreply@match.indeed.com"],
         subjects: [],
         contents: []
     },
     {
         id: "grammarly",
-        backgroundColor: "#027e6f8a",
-        textColor: "inherit",
+        backgroundColor: "#15C39Acc",
+        textColor: "#ffffff",
         senders: ["hello@mail.grammarly.com"],
         subjects: [],
         contents: []
     },
     {
         id: "github",
-        backgroundColor: "#23b75c8a",
-        textColor: "inherit",
-        senders: ["edu-noreply@github.com", "noreply@github.com"],
+        backgroundColor: "#23b75ccc",
+        textColor: "#ffffff",
+        senders: ["@github.com"],
         subjects: [],
         contents: []
     },
     {
         id: "patreon",
-        backgroundColor: "#f96d598a",
-        textColor: "inherit",
+        backgroundColor: "#FF424Dcc",
+        textColor: "#ffffff",
         senders: ["no-reply@patreon.com"],
         subjects: [],
         contents: []
     },
     {
         id: "replit",
-        backgroundColor: "#f263078a",
-        textColor: "inherit",
-        senders: ["notifications@replit.com"],
+        backgroundColor: "#F26207cc",
+        textColor: "#ffffff",
+        senders: ["@replit.com", "@mail.replit.com"],
         subjects: [],
         contents: []
     },
     {
         id: "cursor",
-        backgroundColor: "#666666a0",
-        textColor: "inherit",
-        senders: ["team@mail.cursor.com"],
+        backgroundColor: "#666666cc",
+        textColor: "#ffffff",
+        senders: ["team@mail.cursor.com", "hi@mail.cursor.com"],
         subjects: [],
         contents: []
     },
     {
         id: "google",
-        backgroundColor: "#488af4b0",
-        textColor: "inherit",
-        senders: ["no-reply@accounts.google.com"],
+        backgroundColor: "#4285F4cc",
+        textColor: "#ffffff",
+        senders: ["no-reply@accounts.google.com", "@google.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "microsoft",
+        backgroundColor: "#ffbc08cc",
+        textColor: "#000000",
+        senders: ["Microsoft365@engagement.microsoft.com", "account-security-noreply@accountprotection.microsoft.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "quilbot",
+        backgroundColor: "#088B4Ccc",
+        textColor: "#ffffff",
+        senders: ["updates@mail.quillbot.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "unstop",
+        backgroundColor: "#234E84cc",
+        textColor: "#ffffff",
+        senders: ["noreply@unstop.news", "noreply@dare2compete.news"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "udemy",
+        backgroundColor: "#A435F0cc",
+        textColor: "#ffffff",
+        senders: ["hello@students.udemy.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "leetcode",
+        backgroundColor: "#FFA116cc",
+        textColor: "#000000",
+        senders: ["no-reply@leetcode.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "hack2skill",
+        backgroundColor: "#462170cc",
+        textColor: "#ffffff",
+        senders: ["hello@noreply.hack2skill.com", "admin@no-reply.hack2skill.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "spotify",
+        backgroundColor: "#25d865cc",
+        textColor: "#ffffff",
+        senders: ["no-reply@spotify.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "samsung",
+        backgroundColor: "#0a53a4cc",
+        textColor: "#ffffff",
+        senders: ["samsung@in.email.samsung.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "indigo",
+        backgroundColor: "#082297cc",
+        textColor: "#ffffff",
+        senders: ["IndiGoCustomerFeedback@goindigo.in"],
+        subjects: [],
+        contents: []
+    },
+    // {
+    //     id: "24bbs",
+    //     backgroundColor: "#3261e1a5",
+    //     textColor: "#ffffff",
+    //     senders: ["24bbs@vitstudent.ac.in"],
+    //     subjects: [],
+    //     contents: []
+    // },
+    {
+        id: "mensHostel",
+        backgroundColor: "#E02020cc",
+        textColor: "#ffffff",
+        senders: ["allstudents.mh@vitstudent.ac.in"],
         subjects: [],
         contents: []
     },
     {
         id: "internship",
-        backgroundColor: "#68eb8688",
-        textColor: "inherit",
+        backgroundColor: "#68EB86cc",
+        textColor: "#000000",
         senders: ["careers@", "jobs@", "hr@"],
         subjects: ["internship", "application status", "offer"],
         contents: ["stipend", "months duration", "role"]
     },
     {
         id: "nptel",
-        backgroundColor: "#f8d7da8a",
-        textColor: "inherit",
+        backgroundColor: "#F8D7DAcc",
+        textColor: "#000000",
         senders: ["@nptel.iitm.ac.in", "swayam", "onlinecourses@nptel.iitm.ac.in", "support@nptel.iitm.ac.in"],
         subjects: ["certificate", "exam registration", "assignment"],
         contents: []
     },
     {
         id: "chotadhobi",
-        backgroundColor: "#bd46f58a",
-        textColor: "inherit",
+        backgroundColor: "#BD46F5cc",
+        textColor: "#ffffff",
         senders: ["boss@mycompany.com"],
         subjects: ["Chotadhobi", "Laundry", "Delivery Confirmation"],
         contents: []
     },
     {
         id: "moovit",
-        backgroundColor: "#ec822cb7",
-        textColor: "inherit",
+        backgroundColor: "#EC822Ccc",
+        textColor: "#ffffff",
         senders: ["noreply.moovit@vit.ac.in"],
         subjects: ["Moovit", "assignment", "quiz"],
         contents: ["assignment", "quiz"]
     },
     {
         id: "academic",
-        backgroundColor: "#d680f076",
-        textColor: "inherit",
+        backgroundColor: "#D680F0cc",
+        textColor: "#000000",
         senders: [],
         subjects: ["Lab", "Fat", "Cat", "calendar", "project", "report"],
         contents: ["assignment", "quiz", "calendar", "project", "report"]
     },
     {
         id: "work",
-        backgroundColor: "#cce5ff8a",
-        textColor: "inherit",
+        backgroundColor: "#CCE5FFcc",
+        textColor: "#000000",
         senders: ["boss@mycompany.com"],
         subjects: ["meeting", "project update", "urgent"],
         contents: ["zoom link", "google meet"]
     },
     {
         id: "congrats/greatings",
-        backgroundColor: "#4b4b4376",
-        textColor: "inherit",
+        backgroundColor: "#4B4B43cc",
+        textColor: "#ffffff",
         senders: [],
         subjects: ["congratulations", "season greetings"],
         contents: ["congratulations", "season greetings"]
