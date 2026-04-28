@@ -74,7 +74,7 @@ const classificationRules = [
     },
     {
         id: "google",
-        backgroundColor: "#4285F4cc",
+        backgroundColors: ["#4285F4cc", "#DB4437cc", "#F4B400cc", "#0F9D58cc"],
         textColor: "#ffffff",
         senders: ["no-reply@accounts.google.com", "@google.com"],
         subjects: [],
@@ -82,7 +82,7 @@ const classificationRules = [
     },
     {
         id: "microsoft",
-        backgroundColor: "#ffbc08cc",
+        backgroundColors: ["#F25022cc", "#7FBA00cc", "#00A4EFcc", "#FFB900cc"],
         textColor: "#000000",
         senders: ["Microsoft365@engagement.microsoft.com", "account-security-noreply@accountprotection.microsoft.com"],
         subjects: [],
@@ -149,6 +149,22 @@ const classificationRules = [
         backgroundColor: "#082297cc",
         textColor: "#ffffff",
         senders: ["IndiGoCustomerFeedback@goindigo.in"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "goodreads",
+        backgroundColor: "#ebe2d8cc",
+        textColor: "#000000",
+        senders: ["no-reply@mail.goodreads.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "steam",
+        backgroundColors: ["#237ca9cc","#1e4581cc","#1a3462cc", "#0d1f42cc"],
+        textColor: "#ffffff",
+        senders: ["noreply@steampowered.com"],
         subjects: [],
         contents: []
     },
@@ -268,6 +284,20 @@ function getEmailCategory(data) {
     return null;
 }
 
+function getRuleBackgroundColors(rule) {
+    if (Array.isArray(rule.backgroundColors) && rule.backgroundColors.length) {
+        return rule.backgroundColors;
+    }
+    if (rule.backgroundColor) {
+        return [rule.backgroundColor];
+    }
+    return ["transparent"];
+}
+
+function getSolidColor(color) {
+    return color && color.length >= 7 ? color.substring(0, 7) : color;
+}
+
 // ---------------- 4. HIGHLIGHT FUNCTION ----------------
 function highlightEmails() {
     let emails = document.querySelectorAll('tr[jscontroller]');
@@ -280,35 +310,54 @@ function highlightEmails() {
             return;
         }
 
-        row.style.backgroundColor = matchedRule.backgroundColor;
+        const colors = getRuleBackgroundColors(matchedRule);
+        const primaryColor = colors[0];
+        const accentColor = getSolidColor(primaryColor);
+
+        row.style.backgroundColor = primaryColor;
+        row.style.backgroundImage = colors.length > 1 ? `linear-gradient(90deg, ${colors.join(", ")})` : "none";
+        row.style.backgroundRepeat = "no-repeat";
+        row.style.backgroundSize = "100% 100%";
         row.style.color = matchedRule.textColor;
         row.style.transition = "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)";
         row.style.position = "relative";
 
-        let accentColor = matchedRule.backgroundColor.substring(0, 7);
         row.style.borderLeft = `6px solid ${accentColor}`;
 
         let subjectEl = row.querySelector('.bog');
         if (subjectEl) {
-            if (!subjectEl.querySelector('.custom-badge')) {
+            if (!subjectEl.querySelector('.custom-badge-group')) {
+                const badgeGroup = document.createElement('span');
+                badgeGroup.className = 'custom-badge-group';
+                Object.assign(badgeGroup.style, {
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                });
+
                 const badge = document.createElement('span');
                 badge.className = 'custom-badge';
                 badge.innerText = matchedRule.id.toUpperCase();
 
+                const badgeBackground = colors.length > 1
+                    ? `linear-gradient(90deg, ${colors.join(', ')})`
+                    : accentColor;
+
                 Object.assign(badge.style, {
-                    backgroundColor: accentColor,
+                    background: badgeBackground,
                     color: matchedRule.textColor === "inherit" || matchedRule.textColor === "" ? "white" : matchedRule.textColor,
                     fontSize: "10px",
                     fontWeight: "bold",
                     padding: "2px 8px",
                     borderRadius: "10px",
-                    marginRight: "8px",
                     verticalAlign: "middle",
                     display: "inline-block",
                     boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
                 });
 
-                subjectEl.insertBefore(badge, subjectEl.firstChild);
+                badgeGroup.appendChild(badge);
+
+                subjectEl.insertBefore(badgeGroup, subjectEl.firstChild);
             }
         }
 
