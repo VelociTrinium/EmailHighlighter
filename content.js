@@ -65,10 +65,50 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "noreply@lovable.dev",
+        backgroundColors: ["#ff7e0bcc", "#fd5b22cc", "#c469e4cc", "#5d67d9cc"],
+        textColor: "#ffffff",
+        senders: ["noreply@lovable.dev"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "notifications@vercel.com",
+        backgroundColor: "#ffa176cc",
+        textColor: "#000000",
+        senders: ["notifications@vercel.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "openai",
+        backgroundColor: "#cecececc",
+        textColor: "#ffffff",
+        senders: ["noreply@email.openai.com"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "cursor",
         backgroundColor: "#666666cc",
         textColor: "#ffffff",
-        senders: ["team@mail.cursor.com", "hi@mail.cursor.com"],
+        senders: ["team@mail.cursor.com", "hi@mail.cursor.com", "no-reply@cursor.sh"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "ollama",
+        backgroundColor: "#d8d9ddcc",
+        textColor: "#000000",
+        senders: ["hello@ollama.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "openai",
+        backgroundColor: "#cecececc",
+        textColor: "#ffffff",
+        senders: ["noreply@email.openai.com"],
         subjects: [],
         contents: []
     },
@@ -129,6 +169,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "resume.io",
+        backgroundColors: ["#a4d8fbcc", "#3591eccc"],
+        textColor: "#ffffff",
+        senders: ["support@resume.io"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "spotify",
         backgroundColor: "#25d865cc",
         textColor: "#ffffff",
@@ -161,10 +209,72 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "moneycontrol",
+        backgroundColors: ["#59ab37cc", "#086aa4cc"],
+        textColor: "#ffffff",
+        senders: ["aiedge@moneycontrol.com"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "steam",
         backgroundColors: ["#237ca9cc","#1e4581cc","#1a3462cc", "#0d1f42cc"],
         textColor: "#ffffff",
         senders: ["noreply@steampowered.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "nse",
+        backgroundColors: ["#f0b624cc", "#e7742ccc", "#e3272fcc"],
+        textColor: "#ffffff",
+        senders: ["nse_alerts@nse.co.in"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "bse",
+        backgroundColors: ["#ffd508cc", "#f15f29cc", "#d32a31cc"],
+        textColor: "#ffffff",
+        senders: ["info@bseindia.in"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "groww",
+        backgroundColors: ["#586cfdcc", "#10f1bbcc"],
+        textColor: "#dedede",
+        senders: ["@groww.in", "support.growwmf@kfintech.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "hdfcbank",
+        backgroundColors: ["#0961aecc", "#ffffffcc", "#e2272ecc"],
+        textColor: "#ffffff",
+        senders: ["information@mailers.hdfcbank.bank.in", "information@mailers.hdfcbank.net", "@hdfcbank.bank.in"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "sbi",
+        backgroundColors: ["#09b8f0cc", "#302779cc"],
+        textColor: "#ffffff",
+        senders: ["sbi@communications.sbi.co.in", "marketing@communications.sbicapsec.com"],
+    },
+    {
+        id: "motilaloswal",
+        backgroundColor: "#fbb532cc",
+        textColor: "#ffffff",
+        senders: ["@motilaloswal.com", "@motilaloswalamc.in", "mfservice@kfintech.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "franklintempleton",
+        backgroundColors: ["#ffffffcc", "#085d9dcc"],
+        textColor: "#424242",
+        senders: ["mktg@emkt.franklintempleton.com"],
         subjects: [],
         contents: []
     },
@@ -183,14 +293,6 @@ const classificationRules = [
         senders: ["allstudents.mh@vitstudent.ac.in"],
         subjects: [],
         contents: []
-    },
-    {
-        id: "internship",
-        backgroundColor: "#68EB86cc",
-        textColor: "#000000",
-        senders: ["careers@", "jobs@", "hr@"],
-        subjects: ["internship", "application status", "offer"],
-        contents: ["stipend", "months duration", "role"]
     },
     {
         id: "nptel",
@@ -217,24 +319,32 @@ const classificationRules = [
         contents: ["assignment", "quiz"]
     },
     {
+        id: "internship",
+        backgroundColor: "#68EB86cc",
+        textColor: "#000000",
+        senders: ["careers@", "jobs@", "hr@"],
+        subjects: ["internship", "application status", "offer", "intern"],
+        contents: ["stipend", "months duration", "role", "intern"]
+    },
+    {
         id: "academic",
         backgroundColor: "#D680F0cc",
         textColor: "#000000",
         senders: [],
-        subjects: ["Lab", "Fat", "Cat", "calendar", "project", "report"],
-        contents: ["assignment", "quiz", "calendar", "project", "report"]
+        subjects: ["Lab", "Fat", "Cat", "calendar", "project", "report", "rank"],
+        contents: ["assignment", "quiz", "calendar", "project", "report", "rank"]
     },
+    // {
+    //     id: "work",
+    //     backgroundColor: "#CCE5FFcc",
+    //     textColor: "#000000",
+    //     senders: ["boss@mycompany.com"],
+    //     subjects: ["meeting", "project update", "urgent"],
+    //     contents: ["zoom link", "google meet"]
+    // },
     {
-        id: "work",
-        backgroundColor: "#CCE5FFcc",
-        textColor: "#000000",
-        senders: ["boss@mycompany.com"],
-        subjects: ["meeting", "project update", "urgent"],
-        contents: ["zoom link", "google meet"]
-    },
-    {
-        id: "congrats/greatings",
-        backgroundColor: "#4B4B43cc",
+        id: "congrats",
+        backgroundColor: "#181818cc",
         textColor: "#ffffff",
         senders: [],
         subjects: ["congratulations", "season greetings"],
