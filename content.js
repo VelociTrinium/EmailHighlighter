@@ -121,6 +121,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "youtube",
+        backgroundColors: ["#ff0909cc", "#ffffffcc"],
+        textColor: "#000000",
+        senders: ["no-reply@youtube.com"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "microsoft",
         backgroundColors: ["#F25022cc", "#7FBA00cc", "#00A4EFcc", "#FFB900cc"],
         textColor: "#000000",
@@ -331,8 +339,8 @@ const classificationRules = [
         backgroundColor: "#D680F0cc",
         textColor: "#000000",
         senders: [],
-        subjects: ["Lab", "Fat", "Cat", "calendar", "project", "report", "rank"],
-        contents: ["assignment", "quiz", "calendar", "project", "report", "rank"]
+        subjects: ["lab", "fat", "cat","quiz" , "calendar", "project", "report", "rank", "library", "hackathon"],
+        contents: ["assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon"]
     },
     // {
     //     id: "work",
@@ -343,12 +351,12 @@ const classificationRules = [
     //     contents: ["zoom link", "google meet"]
     // },
     {
-        id: "congrats",
-        backgroundColor: "#181818cc",
+        id: "garbage",
+        backgroundColor: "#080808cc",
         textColor: "#ffffff",
         senders: [],
-        subjects: ["congratulations", "season greetings"],
-        contents: ["congratulations", "season greetings"]
+        subjects: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award"],
+        contents: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award"]
     },
     
 ];
@@ -368,7 +376,7 @@ function extractEmailData(row) {
     // let mailHeaderEl = row.querySelector('.y6');
     // let mailHeader = mailHeaderEl ? mailHeaderEl.innerText.toLowerCase() : "";
 
-    return { senderEmail, snippet, subject /*, mailHeader */ };
+    return { senderEmail, subject, snippet /*, mailHeader */ };
 }
 
 // ---------------- 3. CLASSIFICATION LOGIC ----------------
@@ -385,11 +393,11 @@ function getEmailCategory(data) {
         /* --- FROM CODE 2 (Expansion: Priority 2 Header) --- */
         // if (rule.mailHeader && matchesAny(rule.mailHeader, data.mailHeader)) return rule;
 
-        // Priority 3: Content Snippet
-        if (matchesAny(rule.contents, data.snippet)) return rule;
-
-        // Priority 4: Subject Line
+        // Priority 3: Subject Line
         if (matchesAny(rule.subjects, data.subject)) return rule;
+
+        // Priority 4: Content Snippet
+        if (matchesAny(rule.contents, data.snippet)) return rule;
     }
     return null;
 }
@@ -447,7 +455,7 @@ function highlightEmails() {
 
                 const badge = document.createElement('span');
                 badge.className = 'custom-badge';
-                badge.innerText = matchedRule.id.toUpperCase();
+                badge.innerText = matchedRule.id.charAt(0).toUpperCase() + matchedRule.id.slice(1).toLowerCase();
 
                 const badgeBackground = colors.length > 1
                     ? `linear-gradient(90deg, ${colors.join(', ')})`
@@ -473,7 +481,7 @@ function highlightEmails() {
 
         if (!row.dataset.highlightListeners) {
             row.addEventListener("mouseover", () => {
-                row.style.boxShadow = "inset 8px 0 0 0 " + accentColor + ", 0 4px 12px rgba(0,0,0,0.1)";
+                row.style.boxShadow = "inset 8px 0 0 0 " + accentColor + ", 0 0 16px rgba(0, 0, 0, 0.5)";
                 row.style.filter = "brightness(0.95)";
                 row.style.cursor = "pointer";
             });
