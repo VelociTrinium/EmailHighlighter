@@ -17,6 +17,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "mural",
+        backgroundColor: "#ff0865cc",
+        textColor: "#000000",
+        senders: ["@mural.co"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "linkedin",
         backgroundColor: "#0077B5cc",
         textColor: "#ffffff",
@@ -330,17 +338,17 @@ const classificationRules = [
         id: "internship",
         backgroundColor: "#68EB86cc",
         textColor: "#000000",
-        senders: ["careers@", "jobs@", "hr@"],
-        subjects: ["internship", "application status", "offer", "intern"],
-        contents: ["stipend", "months duration", "role", "intern"]
+        senders: [],
+        subjects: ["internship", "intern "],
+        contents: ["stipend", "months duration", "role", "intern "]
     },
     {
         id: "academic",
         backgroundColor: "#D680F0cc",
         textColor: "#000000",
         senders: [],
-        subjects: ["lab", "fat", "cat","quiz" , "calendar", "project", "report", "rank", "library", "hackathon"],
-        contents: ["assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon"]
+        subjects: ["lab", "fat", "cat","quiz" , "calendar", "project", "report", "rank", "library", "hackathon", "international transfer program"],
+        contents: ["assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "international transfer program"]
     },
     // {
     //     id: "work",
@@ -355,8 +363,8 @@ const classificationRules = [
         backgroundColor: "#080808cc",
         textColor: "#ffffff",
         senders: [],
-        subjects: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award"],
-        contents: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award"]
+        subjects: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas"],
+        contents: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas"]
     },
     
 ];
