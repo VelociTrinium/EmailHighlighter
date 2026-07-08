@@ -217,6 +217,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "airindia",
+        backgroundColors: ["#f39503cc", "#d30e28cc"],
+        textColor: "#ffffff",
+        senders: ["@airindia.com"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "goodreads",
         backgroundColor: "#ebe2d8cc",
         textColor: "#000000",
