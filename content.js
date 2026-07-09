@@ -367,6 +367,14 @@ const classificationRules = [
         contents: ["assignment", "quiz"]
     },
     {
+        id: "guestLecture",
+        backgroundColor: "#237ca9cc",
+        textColor: "#ffffff",
+        senders: [],
+        subjects: ["Industry expert lecture", "Guest Lecture"],
+        contents: []
+    },
+    {
         id: "internship",
         backgroundColor: "#68EB86cc",
         textColor: "#000000",
