@@ -4,7 +4,7 @@ const classificationRules = [
         id: "irctc",
         backgroundColor: "#003366cc",
         textColor: "#ffffff",
-        senders: ["@irctc.co.in", "noreply.irctc@royalsundaram.in"], 
+        senders: ["@irctc.co.in", "noreply.irctc@royalsundaram.in"],
         subjects: [],
         contents: []
     },
@@ -236,13 +236,37 @@ const classificationRules = [
         id: "moneycontrol",
         backgroundColors: ["#59ab37cc", "#086aa4cc"],
         textColor: "#ffffff",
-        senders: ["aiedge@moneycontrol.com"],
+        senders: ["moneycontrol.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "bookmyshow",
+        backgroundColors: ["#555658cc", "#e1364bcc"],
+        textColor: "#ffffff",
+        senders: ["no-reply@feature.bookmyshow.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "confluence",
+        backgroundColors: ["#1190e6cc", "#041d28cc"],
+        textColor: "#ffffff",
+        senders: ["atlassian.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "docker",
+        backgroundColors: ["#f7f7f7cc", "#2291e7cc"],
+        textColor: "#000000ff",
+        senders: ["docker.com"],
         subjects: [],
         contents: []
     },
     {
         id: "steam",
-        backgroundColors: ["#237ca9cc","#1e4581cc","#1a3462cc", "#0d1f42cc"],
+        backgroundColors: ["#237ca9cc", "#1e4581cc", "#1a3462cc", "#0d1f42cc"],
         textColor: "#ffffff",
         senders: ["noreply@steampowered.com"],
         subjects: [],
@@ -355,7 +379,7 @@ const classificationRules = [
         backgroundColor: "#D680F0cc",
         textColor: "#000000",
         senders: [],
-        subjects: ["lab", "fat", "cat","quiz" , "calendar", "project", "report", "rank", "library", "hackathon", "international transfer program"],
+        subjects: ["lab", "fat", "cat", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "international transfer program"],
         contents: ["assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "international transfer program"]
     },
     // {
@@ -374,7 +398,7 @@ const classificationRules = [
         subjects: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas"],
         contents: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas"]
     },
-    
+
 ];
 
 // ---------------- 2. DATA EXTRACTION ----------------
@@ -405,7 +429,7 @@ function getEmailCategory(data) {
     for (let rule of classificationRules) {
         // Priority 1: Senders
         if (matchesAny(rule.senders, data.senderEmail)) return rule;
-        
+
         /* --- FROM CODE 2 (Expansion: Priority 2 Header) --- */
         // if (rule.mailHeader && matchesAny(rule.mailHeader, data.mailHeader)) return rule;
 
