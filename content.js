@@ -100,7 +100,7 @@ const classificationRules = [
         id: "cursor",
         backgroundColor: "#666666cc",
         textColor: "#ffffff",
-        senders: ["team@mail.cursor.com", "hi@mail.cursor.com", "no-reply@cursor.sh"],
+        senders: ["team@mail.cursor.com", "hi@mail.cursor.com", "no-reply@cursor.sh", "cursor.com"],
         subjects: [],
         contents: []
     },
@@ -141,6 +141,14 @@ const classificationRules = [
         backgroundColors: ["#F25022cc", "#7FBA00cc", "#00A4EFcc", "#FFB900cc"],
         textColor: "#000000",
         senders: ["Microsoft365@engagement.microsoft.com", "account-security-noreply@accountprotection.microsoft.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "amazon",
+        backgroundColors: ["#f79400cc", "#151c25cc"],
+        textColor: "#ffffff",
+        senders: ["@amazon.com", "@amazon.in", "@amazon.co.in"],
         subjects: [],
         contents: []
     },
@@ -249,10 +257,10 @@ const classificationRules = [
         contents: []
     },
     {
-        id: "confluence",
+        id: "jira",
         backgroundColors: ["#1190e6cc", "#041d28cc"],
         textColor: "#ffffff",
-        senders: ["atlassian.com"],
+        senders: ["atlassian.net", "atlassian.com"],
         subjects: [],
         contents: []
     },
@@ -261,6 +269,14 @@ const classificationRules = [
         backgroundColors: ["#f7f7f7cc", "#2291e7cc"],
         textColor: "#000000ff",
         senders: ["docker.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "anthropic",
+        backgroundColor: "#d27354cc",
+        textColor: "#000000ff",
+        senders: ["anthropic.com"],
         subjects: [],
         contents: []
     },
