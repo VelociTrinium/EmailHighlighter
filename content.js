@@ -188,7 +188,7 @@ const classificationRules = [
         id: "hack2skill",
         backgroundColor: "#462170cc",
         textColor: "#ffffff",
-        senders: ["hello@noreply.hack2skill.com", "admin@no-reply.hack2skill.com"],
+        senders: ["hack2skill.com"],
         subjects: [],
         contents: []
     },
@@ -220,7 +220,7 @@ const classificationRules = [
         id: "indigo",
         backgroundColor: "#082297cc",
         textColor: "#ffffff",
-        senders: ["IndiGoCustomerFeedback@goindigo.in"],
+        senders: ["goindigo.in"],
         subjects: [],
         contents: []
     },
@@ -252,7 +252,7 @@ const classificationRules = [
         id: "bookmyshow",
         backgroundColors: ["#555658cc", "#e1364bcc"],
         textColor: "#ffffff",
-        senders: ["no-reply@feature.bookmyshow.com"],
+        senders: ["bookmyshow.com"],
         subjects: [],
         contents: []
     },
