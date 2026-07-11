@@ -140,7 +140,7 @@ const classificationRules = [
         id: "microsoft",
         backgroundColors: ["#F25022cc", "#7FBA00cc", "#00A4EFcc", "#FFB900cc"],
         textColor: "#000000",
-        senders: ["Microsoft365@engagement.microsoft.com", "account-security-noreply@accountprotection.microsoft.com"],
+        senders: ["microsoft.com"],
         subjects: [],
         contents: []
     },
