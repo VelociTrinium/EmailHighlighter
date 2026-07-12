@@ -284,7 +284,7 @@ const classificationRules = [
         id: "steam",
         backgroundColors: ["#237ca9cc", "#1e4581cc", "#1a3462cc", "#0d1f42cc"],
         textColor: "#ffffff",
-        senders: ["noreply@steampowered.com"],
+        senders: ["@steampowered.com", "steam.com"],
         subjects: [],
         contents: []
     },
