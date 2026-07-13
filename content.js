@@ -292,7 +292,7 @@ const classificationRules = [
         id: "nse",
         backgroundColors: ["#f0b624cc", "#e7742ccc", "#e3272fcc"],
         textColor: "#ffffff",
-        senders: ["nse_alerts@nse.co.in"],
+        senders: ["@nse.co.in"],
         subjects: [],
         contents: []
     },
