@@ -300,7 +300,7 @@ const classificationRules = [
         id: "bse",
         backgroundColors: ["#ffd508cc", "#f15f29cc", "#d32a31cc"],
         textColor: "#ffffff",
-        senders: ["info@bseindia.in"],
+        senders: ["@bseindia.in"],
         subjects: [],
         contents: []
     },
