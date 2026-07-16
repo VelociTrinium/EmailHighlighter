@@ -324,7 +324,7 @@ const classificationRules = [
         id: "sbi",
         backgroundColors: ["#09b8f0cc", "#302779cc"],
         textColor: "#ffffff",
-        senders: ["sbi@communications.sbi.co.in", "marketing@communications.sbicapsec.com"],
+        senders: ["@communications.sbi.co.in", "@communications.sbicapsec.com"],
     },
     {
         id: "motilaloswal",
