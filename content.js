@@ -308,7 +308,7 @@ const classificationRules = [
         id: "groww",
         backgroundColors: ["#586cfdcc", "#10f1bbcc"],
         textColor: "#dedede",
-        senders: ["@groww.in", "support.growwmf@kfintech.com"],
+        senders: ["@groww.in", "@kfintech.com"],
         subjects: [],
         contents: []
     },
