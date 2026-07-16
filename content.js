@@ -316,7 +316,7 @@ const classificationRules = [
         id: "hdfcbank",
         backgroundColors: ["#0961aecc", "#ffffffcc", "#e2272ecc"],
         textColor: "#ffffff",
-        senders: ["information@mailers.hdfcbank.bank.in", "information@mailers.hdfcbank.net", "@hdfcbank.bank.in"],
+        senders: ["@mailers.hdfcbank.bank.in", "@mailers.hdfcbank.net", "@hdfcbank.bank.in"],
         subjects: [],
         contents: []
     },
