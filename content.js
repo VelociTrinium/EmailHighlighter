@@ -351,6 +351,14 @@ const classificationRules = [
     //     contents: []
     // },
     {
+        id: "Otp_vtop",
+        backgroundColor: "#000000cc",
+        textColor: "#F8D7DAcc",
+        senders: ["no-reply@vit.ac.in"],
+        subjects: ["File modifictaion"],
+        contents: ["File modifictaion"]
+    },
+    {
         id: "mensHostel",
         backgroundColor: "#E02020cc",
         textColor: "#ffffff",
@@ -363,7 +371,7 @@ const classificationRules = [
         backgroundColor: "#F8D7DAcc",
         textColor: "#000000",
         senders: ["@nptel.iitm.ac.in", "swayam", "onlinecourses@nptel.iitm.ac.in", "support@nptel.iitm.ac.in"],
-        subjects: ["certificate", "exam registration", "assignment"],
+        subjects: ["certificate", "exam registration", "assignment", "nptel"],
         contents: []
     },
     {
@@ -395,7 +403,7 @@ const classificationRules = [
         backgroundColor: "#68EB86cc",
         textColor: "#000000",
         senders: [],
-        subjects: ["internship", "intern "],
+        subjects: ["internship", "intern", "Training"],
         contents: ["stipend", "months duration", "role", "intern "]
     },
     {
