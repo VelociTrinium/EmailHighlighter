@@ -241,6 +241,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "medium",
+        backgroundColor: "#ebe2d8cc",
+        textColor: "#000000",
+        senders: ["noreply@medium.com"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "moneycontrol",
         backgroundColors: ["#59ab37cc", "#086aa4cc"],
         textColor: "#ffffff",
@@ -362,7 +370,7 @@ const classificationRules = [
         id: "mensHostel",
         backgroundColor: "#E02020cc",
         textColor: "#ffffff",
-        senders: ["allstudents.mh@vitstudent.ac.in"],
+        senders: ["allstudents.mh@vitstudent.ac.in", "cw.mh@vit.ac.in"],
         subjects: [],
         contents: []
     },
@@ -395,8 +403,8 @@ const classificationRules = [
         backgroundColor: "#237ca9cc",
         textColor: "#ffffff",
         senders: [],
-        subjects: ["Industry expert lecture", "Guest Lecture"],
-        contents: []
+        subjects: ["Industry expert lecture", "Guest Lecture", "Webinar"],
+        contents: ["Industry expert lecture", "Guest Lecture", "Webinar"]
     },
     {
         id: "internship",
