@@ -236,7 +236,7 @@ const classificationRules = [
         id: "goodreads",
         backgroundColor: "#ebe2d8cc",
         textColor: "#000000",
-        senders: ["no-reply@mail.goodreads.com"],
+        senders: ["@mail.goodreads.com"],
         subjects: [],
         contents: []
     },
