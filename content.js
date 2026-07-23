@@ -329,10 +329,28 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "digilocker",
+        backgroundColors: ["#ffffffcc", "#5d36e7cc"],
+        textColor: "#555454ff",
+        senders: ["@digilocker.gov.in"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "incometax",
+        backgroundColors: ["#f5b675cc", "#37b62ccc"],
+        textColor: "#3d3a3aff",
+        senders: ["@cpc.incometax.gov.in"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "sbi",
         backgroundColors: ["#09b8f0cc", "#302779cc"],
         textColor: "#ffffff",
         senders: ["@communications.sbi.co.in", "@communications.sbicapsec.com"],
+        subjects: [],
+        contents: []
     },
     {
         id: "motilaloswal",
