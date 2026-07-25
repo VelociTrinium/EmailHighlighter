@@ -4,7 +4,7 @@ const classificationRules = [
         id: "irctc",
         backgroundColor: "#003366cc",
         textColor: "#ffffff",
-        senders: ["@irctc.co.in", "noreply.irctc@royalsundaram.in"],
+        senders: ["@irctc.co.in", "@royalsundaram.in"],
         subjects: [],
         contents: []
     },
