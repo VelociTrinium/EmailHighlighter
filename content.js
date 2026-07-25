@@ -364,7 +364,7 @@ const classificationRules = [
         id: "franklintempleton",
         backgroundColors: ["#ffffffcc", "#085d9dcc"],
         textColor: "#424242",
-        senders: ["mktg@emkt.franklintempleton.com"],
+        senders: ["@emkt.franklintempleton.com"],
         subjects: [],
         contents: []
     },
