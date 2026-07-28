@@ -28,7 +28,7 @@ const classificationRules = [
         id: "linkedin",
         backgroundColor: "#0077B5cc",
         textColor: "#ffffff",
-        senders: ["@linkedin.com", "messages-noreply@linkedin.com", "linkedin@em.linkedin.com"],
+        senders: ["@linkedin.com", "@linkedin.com", "linkedin@em.linkedin.com"],
         subjects: [],
         contents: []
     },
