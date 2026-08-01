@@ -228,7 +228,7 @@ const classificationRules = [
         id: "airindia",
         backgroundColors: ["#f39503cc", "#d30e28cc"],
         textColor: "#ffffff",
-        senders: ["@airindia.com"],
+        senders: ["@airindia.com", "@maharajaclub.airindia.com"],
         subjects: [],
         contents: []
     },
