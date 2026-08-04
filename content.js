@@ -244,7 +244,7 @@ const classificationRules = [
         id: "medium",
         backgroundColor: "#ebe2d8cc",
         textColor: "#000000",
-        senders: ["@medium.com"],
+        senders: ["medium.com"],
         subjects: [],
         contents: []
     },
