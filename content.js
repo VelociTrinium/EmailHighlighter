@@ -249,6 +249,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "read.ai",
+        backgroundColor: "#7860f7cc",
+        textColor: "#000000",
+        senders: ["support@e.read.ai"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "moneycontrol",
         backgroundColors: ["#59ab37cc", "#086aa4cc"],
         textColor: "#ffffff",
