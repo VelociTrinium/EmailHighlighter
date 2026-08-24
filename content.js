@@ -1,6 +1,14 @@
 // ---------------- 1. THE RULE ENGINE ----------------
 const classificationRules = [
     {
+        id: "Me",
+        backgroundColor: "#9a81e2cc",
+        textColor: "#000000ff",
+        senders: ["jay.mvbom@gmail.com", "jay.mvbom.plays@gmail.com", "paranjay.vsingh@gmail.com", "paranjay.virendra2024@vitstudent.ac.in"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "Interns",
         backgroundColor: "#4fb966cc",
         textColor: "#ffffff",
@@ -484,7 +492,7 @@ const classificationRules = [
         id: "academic",
         backgroundColor: "#D680F0cc",
         textColor: "#000000",
-        senders: [],
+        senders: ["@vit.ac.in"],
         subjects: ["lab", "fat", "cat", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "international transfer program"],
         contents: ["assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "international transfer program"]
     },
@@ -627,7 +635,7 @@ function highlightEmails() {
 
         if (!row.dataset.highlightListeners) {
             row.addEventListener("mouseover", () => {
-                row.style.boxShadow = "inset 8px 0 0 0 " + accentColor + ", 0 0 16px rgba(0, 0, 0, 0.5)";
+                row.style.boxShadow = "inset 10px 0 0 0 " + accentColor + ", 0 0 16px rgba(0, 0, 0, 0.25)";
                 row.style.filter = "brightness(0.95)";
                 row.style.cursor = "pointer";
             });
