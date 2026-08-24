@@ -252,7 +252,7 @@ const classificationRules = [
         id: "read.ai",
         backgroundColor: "#7860f7cc",
         textColor: "#000000",
-        senders: ["support@e.read.ai"],
+        senders: ["support@e.read.ai", "@read.ai"],
         subjects: [],
         contents: []
     },
@@ -282,7 +282,7 @@ const classificationRules = [
     },
     {
         id: "docker",
-        backgroundColors: ["#f7f7f7cc", "#2291e7cc"],
+        backgroundColors: ["#cedeeacc", "#2291e7cc"],
         textColor: "#000000ff",
         senders: ["docker.com"],
         subjects: [],
