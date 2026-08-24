@@ -1,6 +1,30 @@
 // ---------------- 1. THE RULE ENGINE ----------------
 const classificationRules = [
     {
+        id: "Interns",
+        backgroundColor: "#4fb966cc",
+        textColor: "#ffffff",
+        senders: ["himanshuupadhyay029@gmail.com", "harshitsingh3182005@gmail.com", "aloksingh.dev.engineer@gmail.com", "jainmokshit1@gmail.com", "mohdkaif77700@gmail.com", "kshitijt004@gmail.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "Office",
+        backgroundColor: "#0e902acc",
+        textColor: "#ffffff",
+        senders: ["rravisolns@gmail.com", "viren@benchmarksolution.com", "@benchmarksolution.com", "diyasanil4@gmail.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "Family",
+        backgroundColor: "#6200ffcc",
+        textColor: "#ffffff",
+        senders: ["viren.mvbom@gmail.com", "sarita1982singh@gmail.com", "durgavati.lsingh@gmail.com"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "irctc",
         backgroundColor: "#003366cc",
         textColor: "#ffffff",
@@ -229,6 +253,14 @@ const classificationRules = [
         backgroundColors: ["#f39503cc", "#d30e28cc"],
         textColor: "#ffffff",
         senders: ["@airindia.com", "@maharajaclub.airindia.com"],
+        subjects: [],
+        contents: []
+    },
+    {
+        id: "passport",
+        backgroundColor: "#e2cfbacc",
+        textColor: "#000000",
+        senders: ["@passportindia.gov.in"],
         subjects: [],
         contents: []
     },
