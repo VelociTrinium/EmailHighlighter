@@ -509,8 +509,8 @@ const classificationRules = [
         backgroundColor: "#080808cc",
         textColor: "#ffffff",
         senders: [],
-        subjects: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG"],
-        contents: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG"]
+        subjects: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"],
+        contents: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"]
     },
 
 ];
