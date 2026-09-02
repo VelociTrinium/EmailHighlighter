@@ -401,6 +401,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "gamma",
+        backgroundColors: ["#4772bdcc", "#112346cc"],
+        textColor: "#ffffff",
+        senders: ["@gamma.app"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "motilaloswal",
         backgroundColor: "#fbb532cc",
         textColor: "#ffffff",
