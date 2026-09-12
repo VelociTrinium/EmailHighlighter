@@ -477,8 +477,8 @@ const classificationRules = [
         backgroundColor: "#EC822Ccc",
         textColor: "#ffffff",
         senders: ["noreply.moovit@vit.ac.in"],
-        subjects: ["Moovit", "assignment", "quiz"],
-        contents: ["assignment", "quiz"]
+        subjects: ["Moovit"],
+        contents: ["Moovit"]
     },
     {
         id: "guestLecture",
