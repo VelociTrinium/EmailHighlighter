@@ -441,6 +441,14 @@ const classificationRules = [
     //     contents: []
     // },
     {
+        id: "garbage",
+        backgroundColor: "#080808cc",
+        textColor: "#ffffff",
+        senders: [],
+        subjects: ["viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"],
+        contents: ["viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"]
+    },
+    {
         id: "Otp_vtop",
         backgroundColor: "#000000cc",
         textColor: "#F8D7DAcc",
@@ -517,8 +525,8 @@ const classificationRules = [
         backgroundColor: "#080808cc",
         textColor: "#ffffff",
         senders: [],
-        subjects: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"],
-        contents: ["congratulations", "season greetings", "sports achievements", "viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"]
+        subjects: ["congratulations", "season greetings", "sports achievements"],
+        contents: ["congratulations", "season greetings", "sports achievements"]
     },
 
 ];
