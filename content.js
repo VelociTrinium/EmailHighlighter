@@ -1,4 +1,17 @@
 // ---------------- 1. THE RULE ENGINE ----------------
+
+// Setting: when true, highlights are cleared after the user reads an email.
+// Persisted in chrome.storage.local, toggled via the popup.
+let _clearAfterRead = false;
+chrome.storage.local.get('clearAfterRead', (result) => {
+    _clearAfterRead = result.clearAfterRead || false;
+});
+chrome.storage.onChanged.addListener((changes) => {
+    if (changes.clearAfterRead) {
+        _clearAfterRead = changes.clearAfterRead.newValue;
+    }
+});
+
 const classificationRules = [
     {
         id: "Me",
@@ -562,11 +575,16 @@ function extractEmailData(row) {
     let snippet = snippetEl ? snippetEl.innerText.toLowerCase() : "";
 
     let subjectEl = row.querySelector('.bog');
-    let subject = subjectEl ? subjectEl.innerText.toLowerCase() : "";
-
-    /* --- FROM CODE 2 (Expansion) --- */
-    // let mailHeaderEl = row.querySelector('.y6');
-    // let mailHeader = mailHeaderEl ? mailHeaderEl.innerText.toLowerCase() : "";
+    let subject = "";
+    if (subjectEl) {
+        // Exclude badge text if a badge was inserted inside or around subjectEl
+        const badge = row.querySelector('.custom-badge');
+        if (badge && subjectEl.contains(badge)) {
+            subject = subjectEl.innerText.replace(badge.innerText, '').trim().toLowerCase();
+        } else {
+            subject = subjectEl.innerText.trim().toLowerCase();
+        }
+    }
 
     return { senderEmail, subject, snippet /*, mailHeader */ };
 }
@@ -607,8 +625,11 @@ function getSolidColor(color) {
 
 // ---------------- 4. HIGHLIGHT FUNCTION ----------------
 // Optimized: skips already-processed rows via fingerprinting,
-// uses CSS custom properties + class toggle instead of 8+ inline styles,
-// and hover effects are handled in style.css via :hover (no JS listeners).
+// uses CSS custom properties + data-eh-highlighted / .eh-row instead of inline style writes,
+// applies .eh-animate cascade exclusively to brand-new rows (never on restore),
+// and hover effects are handled in style.css via :hover.
+const _knownRowFingerprints = new Set();
+
 function highlightEmails() {
     const emails = document.querySelectorAll('tr[jscontroller]');
     let newRowCount = 0;
@@ -617,43 +638,92 @@ function highlightEmails() {
         const row = emails[i];
         const emailData = extractEmailData(row);
 
-        // Fingerprint = sender + subject. If unchanged since last run, skip this row.
+        // Fingerprint = sender + subject.
         const fingerprint = emailData.senderEmail + '\t' + emailData.subject;
-        if (row.dataset.ehFp === fingerprint) continue;
+        const isAlreadyKnown = _knownRowFingerprints.has(fingerprint);
+        const hasHighlightedAttr = row.dataset.ehHighlighted === 'true';
+        const hasRowClass = row.classList.contains('eh-row');
+        const isRead = row.classList.contains('yO') || (!row.classList.contains('zE') && !row.classList.contains('zF'));
+
+        // Handle clearAfterRead toggle: if user opened/read this email and setting is ON
+        if (_clearAfterRead && isRead && (hasHighlightedAttr || isAlreadyKnown)) {
+            delete row.dataset.ehHighlighted;
+            delete row.dataset.ehFp;
+            delete row.dataset.ehNoMatch;
+            _knownRowFingerprints.delete(fingerprint);
+            row.classList.remove('eh-row', 'eh-animate');
+            row.style.removeProperty('--eh-bg');
+            row.style.removeProperty('--eh-bg-image');
+            row.style.removeProperty('--eh-text');
+            row.style.removeProperty('--eh-accent');
+            row.style.removeProperty('--eh-stagger');
+            const oldBadge = row.querySelector('.custom-badge-group');
+            if (oldBadge) oldBadge.remove();
+            continue;
+        }
+
+        // Fast-path: if fingerprint matches, check if fully styled and badge is present
+        if (row.dataset.ehFp === fingerprint) {
+            const wasNoMatch = row.dataset.ehNoMatch === '1';
+            if (wasNoMatch) continue;
+
+            const hasBadge = Boolean(row.querySelector('.custom-badge-group'));
+            // If class, data attribute, and badge are all intact, skip this row
+            if (hasRowClass && hasHighlightedAttr && hasBadge) continue;
+        }
 
         const matchedRule = getEmailCategory(emailData);
 
         if (!matchedRule) {
             // Clean up if this row was previously highlighted but no longer matches
-            if (row.classList.contains('eh-row')) {
-                row.classList.remove('eh-row');
+            if (hasRowClass || hasHighlightedAttr) {
+                row.classList.remove('eh-row', 'eh-animate');
+                delete row.dataset.ehHighlighted;
                 row.style.removeProperty('--eh-bg');
                 row.style.removeProperty('--eh-bg-image');
                 row.style.removeProperty('--eh-text');
                 row.style.removeProperty('--eh-accent');
+                row.style.removeProperty('--eh-stagger');
                 const oldBadge = row.querySelector('.custom-badge-group');
                 if (oldBadge) oldBadge.remove();
             }
             row.dataset.ehFp = fingerprint;
+            row.dataset.ehNoMatch = '1';
             continue;
         }
+
+        // Clear the no-match flag if previously set
+        delete row.dataset.ehNoMatch;
 
         const colors = getRuleBackgroundColors(matchedRule);
         const primaryColor = colors[0];
         const accentColor = getSolidColor(primaryColor);
 
-        // Set CSS custom properties — the .eh-row class in style.css reads these
+        // Set CSS custom properties — read by .eh-row and tr[data-eh-highlighted="true"]
         row.style.setProperty('--eh-bg', primaryColor);
         row.style.setProperty('--eh-bg-image', colors.length > 1 ? `linear-gradient(90deg, ${colors.join(", ")})` : 'none');
         row.style.setProperty('--eh-text', matchedRule.textColor);
         row.style.setProperty('--eh-accent', accentColor);
-        row.style.setProperty('--eh-stagger', `${newRowCount * 12}ms`);
+
+        // Mark as highlighted via persistent data attribute (survives Gmail className rewrites)
+        row.dataset.ehHighlighted = 'true';
         row.classList.add('eh-row');
-        newRowCount++;
+
+        // Apply cascade animation ONLY for brand-new rows on first appearance.
+        // Restored rows (e.g. returning from reading an email) never get .eh-animate or stagger.
+        if (!isAlreadyKnown) {
+            row.style.setProperty('--eh-stagger', `${newRowCount * 12}ms`);
+            row.classList.add('eh-animate');
+            newRowCount++;
+            _knownRowFingerprints.add(fingerprint);
+        } else {
+            row.style.removeProperty('--eh-stagger');
+            row.classList.remove('eh-animate');
+        }
 
         // Add classification badge (skip if already present)
         const subjectEl = row.querySelector('.bog');
-        if (subjectEl && !subjectEl.querySelector('.custom-badge-group')) {
+        if (subjectEl && !row.querySelector('.custom-badge-group')) {
             const badgeGroup = document.createElement('span');
             badgeGroup.className = 'custom-badge-group';
 
@@ -666,7 +736,12 @@ function highlightEmails() {
             badge.style.color = matchedRule.textColor === "inherit" || matchedRule.textColor === "" ? "white" : matchedRule.textColor;
 
             badgeGroup.appendChild(badge);
-            subjectEl.insertBefore(badgeGroup, subjectEl.firstChild);
+            // Insert before subjectEl as a sibling if parent exists, else inside subjectEl
+            if (subjectEl.parentNode) {
+                subjectEl.parentNode.insertBefore(badgeGroup, subjectEl);
+            } else {
+                subjectEl.insertBefore(badgeGroup, subjectEl.firstChild);
+            }
         }
 
         row.dataset.ehFp = fingerprint;
@@ -710,8 +785,10 @@ function observeUrlChange() {
     const observer = new MutationObserver(() => {
         if (location.href !== lastUrl) {
             lastUrl = location.href;
-            // New view: Gmail needs time to render rows; schedule a delayed pass
-            setTimeout(scheduleHighlight, 1000);
+            // Immediate pass on URL change
+            scheduleHighlight();
+            // Follow-up pass in case Gmail renders rows asynchronously
+            setTimeout(scheduleHighlight, 500);
         }
     });
     observer.observe(document.body, { childList: true, subtree: true });
@@ -728,7 +805,7 @@ _headerObserver.observe(document.body, { childList: true, subtree: true });
 // ---------------- INIT ----------------
 function init() {
     highlightEmails();
-    observeUrlChange();
+    // observeUrlChange();
     observeEmailChanges();
 }
 

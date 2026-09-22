@@ -3,7 +3,7 @@
     "name": "Gmail Sorter",
     "version": "1.0",
     "description": "Categorize Gmail emails",
-    "permissions": ["activeTab", "scripting"],
+    "permissions": ["activeTab", "scripting", "storage"],
     "host_permissions": ["https://mail.google.com/*"],
 
     "action": {

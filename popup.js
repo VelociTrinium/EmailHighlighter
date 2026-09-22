@@ -1,9 +1,12 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab || !tab.id) return;
+    const toggle = document.getElementById("clearAfterRead");
 
-    chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ["content.js"]
+    // Load saved state (default: OFF)
+    const { clearAfterRead = false } = await chrome.storage.local.get("clearAfterRead");
+    toggle.checked = clearAfterRead;
+
+    // Save on change + notify content scripts in all Gmail tabs
+    toggle.addEventListener("change", async () => {
+        await chrome.storage.local.set({ clearAfterRead: toggle.checked });
     });
 });

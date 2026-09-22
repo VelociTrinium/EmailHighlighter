@@ -8,7 +8,7 @@
    ============================================================ */
 
 /* Smooth cascade animation — rows fade in with staggered delay
-   instead of all appearing in a single-frame flash */
+   on first appearance only via .eh-animate */
 @keyframes eh-fade-in {
     from {
         opacity: 0;
@@ -19,24 +19,33 @@
 }
 
 /* Highlighted email row —
-   reads --eh-bg, --eh-bg-image, --eh-text, --eh-accent
-   set by content.js on each <tr> */
-.eh-row {
+   reads --eh-bg, --eh-bg-image, --eh-text, --eh-accent set on each <tr>.
+   Matching via both .eh-row and tr[data-eh-highlighted="true"] guarantees that
+   when Gmail rewrites className (e.g. marking read on email open/close),
+   the highlight never drops or flashes white for even a single frame. */
+.eh-row,
+tr[data-eh-highlighted="true"] {
     background-color: var(--eh-bg) !important;
     background-image: var(--eh-bg-image, none) !important;
     background-repeat: no-repeat !important;
     background-size: 100% 100% !important;
     color: var(--eh-text) !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     position: relative !important;
     border-left: 6px solid var(--eh-accent) !important;
-    animation: eh-fade-in 0.3s ease-out backwards !important;
+    /* Smooth transitions for visual colors only — avoids 'all' which causes reflow flicker */
+    transition: background-color 0.25s ease, border-left-color 0.25s ease, color 0.25s ease !important;
+}
+
+/* Initial cascade animation — applied ONLY to brand-new rows on first load,
+   NEVER to restored or re-highlighted rows */
+.eh-animate {
+    animation: eh-fade-in 0.5s ease-out backwards !important;
     animation-delay: var(--eh-stagger, 0s) !important;
 }
 
-/* Hover effect — replaces the JS mouseover/mouseout event listeners,
-   eliminating two addEventListener() calls per email row */
-.eh-row:hover {
+/* Hover effect — replaces the JS mouseover/mouseout event listeners */
+.eh-row:hover,
+tr[data-eh-highlighted="true"]:hover {
     box-shadow: inset 10px 0 0 0 var(--eh-accent), 0 0 16px rgba(0, 0, 0, 0.25) !important;
     filter: brightness(0.95) !important;
     cursor: pointer !important;
@@ -47,6 +56,8 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    margin-right: 6px;
+    vertical-align: middle;
 }
 
 /* Individual classification badge */
@@ -58,4 +69,17 @@
     vertical-align: middle;
     display: inline-block;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    animation: eh-badge-fade 0.15s ease-out;
+}
+
+@keyframes eh-badge-fade {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
