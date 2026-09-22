@@ -539,6 +539,20 @@ const classificationRules = [
 
 ];
 
+// ---------------- 1b. PRE-PROCESS RULES (one-time at load) ----------------
+// Pre-lowercase all pattern strings once at startup.
+// This eliminates repeated .toLowerCase() calls inside the hot classification loop.
+(function preprocessRules() {
+    for (const rule of classificationRules) {
+        rule._senders = (rule.senders || []).map(s => s.toLowerCase());
+        rule._subjects = (rule.subjects || []).map(s => s.toLowerCase());
+        rule._contents = (rule.contents || []).map(s => s.toLowerCase());
+        rule._hasSenders = rule._senders.length > 0;
+        rule._hasSubjects = rule._subjects.length > 0;
+        rule._hasContents = rule._contents.length > 0;
+    }
+})();
+
 // ---------------- 2. DATA EXTRACTION ----------------
 function extractEmailData(row) {
     let senderEl = row.querySelector('[email]');
@@ -558,24 +572,21 @@ function extractEmailData(row) {
 }
 
 // ---------------- 3. CLASSIFICATION LOGIC ----------------
+// Inlined matching using pre-processed _senders/_subjects/_contents arrays.
+// Eliminates: matchesAny closure creation, null-guard overhead, per-keyword toLowerCase().
 function getEmailCategory(data) {
-    const matchesAny = (keywords, targetText) => {
-        if (!keywords || keywords.length === 0 || !targetText) return false;
-        return keywords.some(keyword => targetText.includes(keyword.toLowerCase()));
-    };
-
     for (let rule of classificationRules) {
-        // Priority 1: Senders
-        if (matchesAny(rule.senders, data.senderEmail)) return rule;
+        // Priority 1: Senders (pre-lowercased _senders)
+        if (rule._hasSenders && rule._senders.some(s => data.senderEmail.includes(s))) return rule;
 
         /* --- FROM CODE 2 (Expansion: Priority 2 Header) --- */
         // if (rule.mailHeader && matchesAny(rule.mailHeader, data.mailHeader)) return rule;
 
         // Priority 3: Subject Line
-        if (matchesAny(rule.subjects, data.subject)) return rule;
+        if (rule._hasSubjects && rule._subjects.some(s => data.subject.includes(s))) return rule;
 
         // Priority 4: Content Snippet
-        if (matchesAny(rule.contents, data.snippet)) return rule;
+        if (rule._hasContents && rule._contents.some(s => data.snippet.includes(s))) return rule;
     }
     return null;
 }
@@ -595,94 +606,68 @@ function getSolidColor(color) {
 }
 
 // ---------------- 4. HIGHLIGHT FUNCTION ----------------
+// Optimized: skips already-processed rows via fingerprinting,
+// uses CSS custom properties + class toggle instead of 8+ inline styles,
+// and hover effects are handled in style.css via :hover (no JS listeners).
 function highlightEmails() {
-    let emails = document.querySelectorAll('tr[jscontroller]');
+    const emails = document.querySelectorAll('tr[jscontroller]');
 
-    emails.forEach(row => {
-        let emailData = extractEmailData(row);
-        let matchedRule = getEmailCategory(emailData);
+    for (let i = 0; i < emails.length; i++) {
+        const row = emails[i];
+        const emailData = extractEmailData(row);
+
+        // Fingerprint = sender + subject. If unchanged since last run, skip this row.
+        const fingerprint = emailData.senderEmail + '\t' + emailData.subject;
+        if (row.dataset.ehFp === fingerprint) continue;
+
+        const matchedRule = getEmailCategory(emailData);
 
         if (!matchedRule) {
-            return;
+            // Clean up if this row was previously highlighted but no longer matches
+            if (row.classList.contains('eh-row')) {
+                row.classList.remove('eh-row');
+                row.style.removeProperty('--eh-bg');
+                row.style.removeProperty('--eh-bg-image');
+                row.style.removeProperty('--eh-text');
+                row.style.removeProperty('--eh-accent');
+                const oldBadge = row.querySelector('.custom-badge-group');
+                if (oldBadge) oldBadge.remove();
+            }
+            row.dataset.ehFp = fingerprint;
+            continue;
         }
 
         const colors = getRuleBackgroundColors(matchedRule);
         const primaryColor = colors[0];
         const accentColor = getSolidColor(primaryColor);
 
-        row.style.backgroundColor = primaryColor;
-        row.style.backgroundImage = colors.length > 1 ? `linear-gradient(90deg, ${colors.join(", ")})` : "none";
-        row.style.backgroundRepeat = "no-repeat";
-        row.style.backgroundSize = "100% 100%";
-        row.style.color = matchedRule.textColor;
-        row.style.transition = "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)";
-        row.style.position = "relative";
+        // Set CSS custom properties — the .eh-row class in style.css reads these
+        row.style.setProperty('--eh-bg', primaryColor);
+        row.style.setProperty('--eh-bg-image', colors.length > 1 ? `linear-gradient(90deg, ${colors.join(", ")})` : 'none');
+        row.style.setProperty('--eh-text', matchedRule.textColor);
+        row.style.setProperty('--eh-accent', accentColor);
+        row.classList.add('eh-row');
 
-        row.style.borderLeft = `6px solid ${accentColor}`;
+        // Add classification badge (skip if already present)
+        const subjectEl = row.querySelector('.bog');
+        if (subjectEl && !subjectEl.querySelector('.custom-badge-group')) {
+            const badgeGroup = document.createElement('span');
+            badgeGroup.className = 'custom-badge-group';
 
-        let subjectEl = row.querySelector('.bog');
-        if (subjectEl) {
-            if (!subjectEl.querySelector('.custom-badge-group')) {
-                const badgeGroup = document.createElement('span');
-                badgeGroup.className = 'custom-badge-group';
-                Object.assign(badgeGroup.style, {
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                });
+            const badge = document.createElement('span');
+            badge.className = 'custom-badge';
+            badge.innerText = matchedRule.id.charAt(0).toUpperCase() + matchedRule.id.slice(1).toLowerCase();
+            badge.style.background = colors.length > 1
+                ? `linear-gradient(90deg, ${colors.join(', ')})`
+                : accentColor;
+            badge.style.color = matchedRule.textColor === "inherit" || matchedRule.textColor === "" ? "white" : matchedRule.textColor;
 
-                const badge = document.createElement('span');
-                badge.className = 'custom-badge';
-                badge.innerText = matchedRule.id.charAt(0).toUpperCase() + matchedRule.id.slice(1).toLowerCase();
-
-                const badgeBackground = colors.length > 1
-                    ? `linear-gradient(90deg, ${colors.join(', ')})`
-                    : accentColor;
-
-                Object.assign(badge.style, {
-                    background: badgeBackground,
-                    color: matchedRule.textColor === "inherit" || matchedRule.textColor === "" ? "white" : matchedRule.textColor,
-                    fontSize: "10px",
-                    fontWeight: "bold",
-                    padding: "2px 8px",
-                    borderRadius: "10px",
-                    verticalAlign: "middle",
-                    display: "inline-block",
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-                });
-
-                badgeGroup.appendChild(badge);
-
-                subjectEl.insertBefore(badgeGroup, subjectEl.firstChild);
-            }
+            badgeGroup.appendChild(badge);
+            subjectEl.insertBefore(badgeGroup, subjectEl.firstChild);
         }
 
-        if (!row.dataset.highlightListeners) {
-            row.addEventListener("mouseover", () => {
-                row.style.boxShadow = "inset 10px 0 0 0 " + accentColor + ", 0 0 16px rgba(0, 0, 0, 0.25)";
-                row.style.filter = "brightness(0.95)";
-                row.style.cursor = "pointer";
-            });
-
-            row.addEventListener("mouseout", () => {
-                row.style.boxShadow = "none";
-                row.style.filter = "none";
-            });
-
-            row.dataset.highlightListeners = "true";
-        }
-
-        /* --- FROM CODE 2 (Expansion: Category-Specific Actions) --- */
-        /*
-        if (matchedRule.id === "irctc") {
-            row.addEventListener("click", (e) => {
-                if (!e.target.closest('.apU, .oZ-jc')) {
-                    window.open("https://www.irctc.co.in/nget/train-search", "_blank");
-                }
-            });
-        }
-        */
-    });
+        row.dataset.ehFp = fingerprint;
+    }
 }
 
 // ---------------- 5. OPENED EMAIL HIGHLIGHTER ----------------
@@ -704,18 +689,33 @@ function highlightOpenedEmail() {
 // ---------------- 6. OBSERVERS & DETECTORS ----------------
 let lastUrl = location.href; // Fixed: Global variable declaration from Code 1
 
+// Debounce via requestAnimationFrame:
+// Gmail fires 100s of DOM mutations/sec during load. Without this,
+// highlightEmails() was called on EVERY mutation — the #1 perf killer.
+// Now, all mutations within a single frame are coalesced into one call.
+let _rafPending = false;
+function scheduleHighlight() {
+    if (_rafPending) return;
+    _rafPending = true;
+    requestAnimationFrame(() => {
+        _rafPending = false;
+        highlightEmails();
+    });
+}
+
 function observeUrlChange() {
     const observer = new MutationObserver(() => {
         if (location.href !== lastUrl) {
             lastUrl = location.href;
-            setTimeout(() => highlightEmails(), 2000);
+            // New view: Gmail needs time to render rows; schedule a delayed pass
+            setTimeout(scheduleHighlight, 1000);
         }
     });
     observer.observe(document.body, { childList: true, subtree: true });
 }
 
 function observeEmailChanges() {
-    const observer = new MutationObserver(() => highlightEmails());
+    const observer = new MutationObserver(scheduleHighlight);
     observer.observe(document.body, { childList: true, subtree: true });
 }
 

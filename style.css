@@ -1,0 +1,48 @@
+/* ============================================================
+   EmailHighlighter – Performance-Optimized Styles
+   ============================================================
+   Styles are applied via the .eh-row class + CSS custom properties
+   set on each row. This replaces 8+ individual inline style writes
+   per row with a single classList.add(), drastically reducing
+   layout thrashing and forced reflows during Gmail load.
+   ============================================================ */
+
+/* Highlighted email row —
+   reads --eh-bg, --eh-bg-image, --eh-text, --eh-accent
+   set by content.js on each <tr> */
+.eh-row {
+    background-color: var(--eh-bg) !important;
+    background-image: var(--eh-bg-image, none) !important;
+    background-repeat: no-repeat !important;
+    background-size: 100% 100% !important;
+    color: var(--eh-text) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    border-left: 6px solid var(--eh-accent) !important;
+}
+
+/* Hover effect — replaces the JS mouseover/mouseout event listeners,
+   eliminating two addEventListener() calls per email row */
+.eh-row:hover {
+    box-shadow: inset 10px 0 0 0 var(--eh-accent), 0 0 16px rgba(0, 0, 0, 0.25) !important;
+    filter: brightness(0.95) !important;
+    cursor: pointer !important;
+}
+
+/* Classification badge container */
+.custom-badge-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Individual classification badge */
+.custom-badge {
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 10px;
+    vertical-align: middle;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
