@@ -193,6 +193,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "pinterest",
+        backgroundColor: "#df0022cc",
+        textColor: "#ffffff",
+        senders: ["recommendations@discover.pinterest.com"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "unstop",
         backgroundColor: "#234E84cc",
         textColor: "#ffffff",
