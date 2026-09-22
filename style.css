@@ -7,6 +7,17 @@
    layout thrashing and forced reflows during Gmail load.
    ============================================================ */
 
+/* Smooth cascade animation — rows fade in with staggered delay
+   instead of all appearing in a single-frame flash */
+@keyframes eh-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 /* Highlighted email row —
    reads --eh-bg, --eh-bg-image, --eh-text, --eh-accent
    set by content.js on each <tr> */
@@ -19,6 +30,8 @@
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     position: relative !important;
     border-left: 6px solid var(--eh-accent) !important;
+    animation: eh-fade-in 0.3s ease-out backwards !important;
+    animation-delay: var(--eh-stagger, 0s) !important;
 }
 
 /* Hover effect — replaces the JS mouseover/mouseout event listeners,

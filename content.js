@@ -611,6 +611,7 @@ function getSolidColor(color) {
 // and hover effects are handled in style.css via :hover (no JS listeners).
 function highlightEmails() {
     const emails = document.querySelectorAll('tr[jscontroller]');
+    let newRowCount = 0;
 
     for (let i = 0; i < emails.length; i++) {
         const row = emails[i];
@@ -646,7 +647,9 @@ function highlightEmails() {
         row.style.setProperty('--eh-bg-image', colors.length > 1 ? `linear-gradient(90deg, ${colors.join(", ")})` : 'none');
         row.style.setProperty('--eh-text', matchedRule.textColor);
         row.style.setProperty('--eh-accent', accentColor);
+        row.style.setProperty('--eh-stagger', `${newRowCount * 12}ms`);
         row.classList.add('eh-row');
+        newRowCount++;
 
         // Add classification badge (skip if already present)
         const subjectEl = row.querySelector('.bog');
