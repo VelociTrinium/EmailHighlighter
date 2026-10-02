@@ -546,8 +546,8 @@ const classificationRules = [
         backgroundColor: "#080808cc",
         textColor: "#ffffff",
         senders: [],
-        subjects: ["congratulations", "season greetings", "sports achievements"],
-        contents: ["congratulations", "season greetings", "sports achievements"]
+        subjects: ["congratulations", "season greetings", "sports achievements", "Greetings"],
+        contents: ["congratulations", "season greetings", "sports achievements", "Greetings"]
     },
 
 ];
