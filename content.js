@@ -490,7 +490,7 @@ const classificationRules = [
         backgroundColor: "#F8D7DAcc",
         textColor: "#000000",
         senders: ["@nptel.iitm.ac.in", "swayam", "onlinecourses@nptel.iitm.ac.in", "support@nptel.iitm.ac.in"],
-        subjects: ["certificate", "exam registration", "assignment", "nptel"],
+        subjects: ["nptel"],
         contents: []
     },
     {
@@ -526,12 +526,20 @@ const classificationRules = [
         contents: ["stipend", "months duration", "role", "intern "]
     },
     {
+        id: "garbage",
+        backgroundColor: "#080808cc",
+        textColor: "#ffffff",
+        senders: [],
+        subjects: ["congratulations", "season greetings", "sports achievements", "Greetings"],
+        contents: ["congratulations", "season greetings", "sports achievements", "Greetings"]
+    },
+    {
         id: "academic",
         backgroundColor: "#D680F0cc",
         textColor: "#000000",
         senders: ["@vit.ac.in"],
-        subjects: ["lab", "fat", "cat", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "international transfer program"],
-        contents: ["assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "international transfer program"]
+        subjects: ["lab", "fat", "cat", "assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "workshop", "international transfer program"],
+        contents: ["lab", "fat", "cat", "assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "workshop", "international transfer program"]
     },
     // {
     //     id: "work",
@@ -541,15 +549,6 @@ const classificationRules = [
     //     subjects: ["meeting", "project update", "urgent"],
     //     contents: ["zoom link", "google meet"]
     // },
-    {
-        id: "garbage",
-        backgroundColor: "#080808cc",
-        textColor: "#ffffff",
-        senders: [],
-        subjects: ["congratulations", "season greetings", "sports achievements", "Greetings"],
-        contents: ["congratulations", "season greetings", "sports achievements", "Greetings"]
-    },
-
 ];
 
 // ---------------- 1b. PRE-PROCESS RULES (one-time at load) ----------------
