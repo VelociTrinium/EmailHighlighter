@@ -73,7 +73,7 @@ const classificationRules = [
         id: "linkedin",
         backgroundColor: "#0077B5cc",
         textColor: "#ffffff",
-        senders: ["linkedin.com"],
+        senders: ["@linkedin.com", "@em.linkedin.com"],
         subjects: [],
         contents: []
     },
@@ -81,7 +81,7 @@ const classificationRules = [
         id: "indeed",
         backgroundColor: "#2557A7cc",
         textColor: "#ffffff",
-        senders: ["no-reply@indeed.com", "donotreply@match.indeed.com"],
+        senders: ["@indeed.com", "@match.indeed.com"],
         subjects: [],
         contents: []
     },
