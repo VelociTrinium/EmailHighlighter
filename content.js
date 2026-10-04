@@ -137,7 +137,7 @@ const classificationRules = [
         id: "openai",
         backgroundColor: "#cecececc",
         textColor: "#ffffff",
-        senders: ["noreply@email.openai.com"],
+        senders: ["@email.openai.com"],
         subjects: [],
         contents: []
     },
@@ -145,7 +145,7 @@ const classificationRules = [
         id: "cursor",
         backgroundColor: "#666666cc",
         textColor: "#ffffff",
-        senders: ["team@mail.cursor.com", "hi@mail.cursor.com", "no-reply@cursor.sh", "cursor.com"],
+        senders: ["@mail.cursor.com", "@cursor.sh", "@cursor.com"],
         subjects: [],
         contents: []
     },
