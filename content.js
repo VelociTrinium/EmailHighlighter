@@ -118,7 +118,7 @@ const classificationRules = [
         contents: []
     },
     {
-        id: "noreply@lovable.dev",
+        id: "lovable",
         backgroundColors: ["#ff7e0bcc", "#fd5b22cc", "#c469e4cc", "#5d67d9cc"],
         textColor: "#ffffff",
         senders: ["@lovable.dev"],
@@ -126,10 +126,10 @@ const classificationRules = [
         contents: []
     },
     {
-        id: "notifications@vercel.com",
+        id: "vercel",
         backgroundColor: "#ffa176cc",
         textColor: "#000000",
-        senders: ["notifications@vercel.com"],
+        senders: ["@vercel.com"],
         subjects: [],
         contents: []
     },
