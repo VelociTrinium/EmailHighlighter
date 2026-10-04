@@ -153,15 +153,7 @@ const classificationRules = [
         id: "ollama",
         backgroundColor: "#d8d9ddcc",
         textColor: "#000000",
-        senders: ["hello@ollama.com"],
-        subjects: [],
-        contents: []
-    },
-    {
-        id: "openai",
-        backgroundColor: "#cecececc",
-        textColor: "#ffffff",
-        senders: ["noreply@email.openai.com"],
+        senders: ["@ollama.com"],
         subjects: [],
         contents: []
     },
