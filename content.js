@@ -161,7 +161,7 @@ const classificationRules = [
         id: "google",
         backgroundColors: ["#4285F4cc", "#DB4437cc", "#F4B400cc", "#0F9D58cc"],
         textColor: "#ffffff",
-        senders: ["no-reply@accounts.google.com", "@google.com"],
+        senders: ["@accounts.google.com", "@google.com"],
         subjects: [],
         contents: []
     },
@@ -169,7 +169,7 @@ const classificationRules = [
         id: "youtube",
         backgroundColors: ["#ff0909cc", "#ffffffcc"],
         textColor: "#000000",
-        senders: ["no-reply@youtube.com"],
+        senders: ["@youtube.com"],
         subjects: [],
         contents: []
     },
