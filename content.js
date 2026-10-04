@@ -89,7 +89,7 @@ const classificationRules = [
         id: "grammarly",
         backgroundColor: "#15C39Acc",
         textColor: "#ffffff",
-        senders: ["hello@mail.grammarly.com"],
+        senders: ["@mail.grammarly.com"],
         subjects: [],
         contents: []
     },
@@ -105,7 +105,7 @@ const classificationRules = [
         id: "patreon",
         backgroundColor: "#FF424Dcc",
         textColor: "#ffffff",
-        senders: ["no-reply@patreon.com"],
+        senders: ["y@patreon.com"],
         subjects: [],
         contents: []
     },
