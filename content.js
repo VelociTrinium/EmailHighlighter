@@ -225,7 +225,7 @@ const classificationRules = [
         id: "leetcode",
         backgroundColor: "#FFA116cc",
         textColor: "#000000",
-        senders: ["no-reply@leetcode.com"],
+        senders: ["@leetcode.com"],
         subjects: [],
         contents: []
     },
@@ -233,7 +233,7 @@ const classificationRules = [
         id: "hack2skill",
         backgroundColor: "#462170cc",
         textColor: "#ffffff",
-        senders: ["hack2skill.com"],
+        senders: ["@hack2skill.com"],
         subjects: [],
         contents: []
     },
@@ -241,7 +241,7 @@ const classificationRules = [
         id: "resume.io",
         backgroundColors: ["#a4d8fbcc", "#3591eccc"],
         textColor: "#ffffff",
-        senders: ["support@resume.io"],
+        senders: ["@resume.io"],
         subjects: [],
         contents: []
     },
@@ -249,7 +249,7 @@ const classificationRules = [
         id: "spotify",
         backgroundColor: "#25d865cc",
         textColor: "#ffffff",
-        senders: ["no-reply@spotify.com"],
+        senders: ["@spotify.com"],
         subjects: [],
         contents: []
     },
@@ -257,7 +257,7 @@ const classificationRules = [
         id: "samsung",
         backgroundColor: "#0a53a4cc",
         textColor: "#ffffff",
-        senders: ["samsung@in.email.samsung.com"],
+        senders: ["@in.email.samsung.com"],
         subjects: [],
         contents: []
     },
