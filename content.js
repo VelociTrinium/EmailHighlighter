@@ -177,7 +177,7 @@ const classificationRules = [
         id: "microsoft",
         backgroundColors: ["#F25022cc", "#7FBA00cc", "#00A4EFcc", "#FFB900cc"],
         textColor: "#000000",
-        senders: ["microsoft.com"],
+        senders: ["@microsoft.com"],
         subjects: [],
         contents: []
     },
@@ -193,7 +193,7 @@ const classificationRules = [
         id: "quilbot",
         backgroundColor: "#088B4Ccc",
         textColor: "#ffffff",
-        senders: ["updates@mail.quillbot.com"],
+        senders: ["@mail.quillbot.com"],
         subjects: [],
         contents: []
     },
