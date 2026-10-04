@@ -201,7 +201,7 @@ const classificationRules = [
         id: "pinterest",
         backgroundColor: "#df0022cc",
         textColor: "#ffffff",
-        senders: ["recommendations@discover.pinterest.com"],
+        senders: ["@discover.pinterest.com"],
         subjects: [],
         contents: []
     },
@@ -209,7 +209,7 @@ const classificationRules = [
         id: "unstop",
         backgroundColor: "#234E84cc",
         textColor: "#ffffff",
-        senders: ["noreply@unstop.news", "noreply@dare2compete.news"],
+        senders: ["@unstop.news", "@dare2compete.news"],
         subjects: [],
         contents: []
     },
@@ -217,7 +217,7 @@ const classificationRules = [
         id: "udemy",
         backgroundColor: "#A435F0cc",
         textColor: "#ffffff",
-        senders: ["hello@students.udemy.com"],
+        senders: ["@students.udemy.com"],
         subjects: [],
         contents: []
     },
