@@ -1,14 +1,3 @@
-/* ============================================================
-   EmailHighlighter – Performance-Optimized Styles
-   ============================================================
-   Styles are applied via the .eh-row class + CSS custom properties
-   set on each row. This replaces 8+ individual inline style writes
-   per row with a single classList.add(), drastically reducing
-   layout thrashing and forced reflows during Gmail load.
-   ============================================================ */
-
-/* Smooth cascade animation — rows fade in with staggered delay
-   on first appearance only via .eh-animate */
 @keyframes eh-fade-in {
     from {
         opacity: 0;
@@ -18,11 +7,6 @@
     }
 }
 
-/* Highlighted email row —
-   reads --eh-bg, --eh-bg-image, --eh-text, --eh-accent set on each <tr>.
-   Matching via both .eh-row and tr[data-eh-highlighted="true"] guarantees that
-   when Gmail rewrites className (e.g. marking read on email open/close),
-   the highlight never drops or flashes white for even a single frame. */
 .eh-row,
 tr[data-eh-highlighted="true"] {
     background-color: var(--eh-bg) !important;
@@ -32,18 +16,14 @@ tr[data-eh-highlighted="true"] {
     color: var(--eh-text) !important;
     position: relative !important;
     border-left: 6px solid var(--eh-accent) !important;
-    /* Smooth transitions for visual colors only — avoids 'all' which causes reflow flicker */
     transition: background-color 0.25s ease, border-left-color 0.25s ease, color 0.25s ease !important;
 }
 
-/* Initial cascade animation — applied ONLY to brand-new rows on first load,
-   NEVER to restored or re-highlighted rows */
 .eh-animate {
     animation: eh-fade-in 0.5s ease-out backwards !important;
     animation-delay: var(--eh-stagger, 0s) !important;
 }
 
-/* Hover effect — replaces the JS mouseover/mouseout event listeners */
 .eh-row:hover,
 tr[data-eh-highlighted="true"]:hover {
     box-shadow: inset 10px 0 0 0 var(--eh-accent), 0 0 16px rgba(0, 0, 0, 0.25) !important;
@@ -51,7 +31,6 @@ tr[data-eh-highlighted="true"]:hover {
     cursor: pointer !important;
 }
 
-/* Classification badge container */
 .custom-badge-group {
     display: inline-flex;
     align-items: center;
@@ -60,7 +39,6 @@ tr[data-eh-highlighted="true"]:hover {
     vertical-align: middle;
 }
 
-/* Individual classification badge */
 .custom-badge {
     font-size: 10px;
     font-weight: bold;

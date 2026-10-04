@@ -1,20 +1,13 @@
 {
     "manifest_version": 3,
     "name": "Gmail Sorter",
-    "version": "1.0",
+    "version": "2.0",
     "description": "Categorize Gmail emails",
-    "permissions": ["activeTab", "scripting", "storage"],
-    "host_permissions": ["https://mail.google.com/*"],
-
-    "action": {
-        "default_popup": "popup.html"
-    },  
     "content_scripts": [
         {
-        "matches": ["https://mail.google.com/*"],
-        "css": ["style.css"],
-        "js": ["content.js"],
-        "run_at": "document_idle"
+            "matches": ["https://mail.google.com/*"],
+            "css": ["style.css"],
+            "js": ["content.js"]
         }
     ]
 }

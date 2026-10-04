@@ -8,8 +8,7 @@ A Chrome extension that color-codes Gmail message rows based on sender, subject,
 2. Enable **Developer mode**
 3. Click **Load unpacked**
 4. Select the `gmail-sorter` folder
-5. Open Gmail (`https://mail.google.com/`)
-6. Click the extension icon to run it. Emails are highlighted automatically.
+5. Open Gmail (`https://mail.google.com/`). Emails are highlighted automatically.
 
 > Note: The extension targets Gmail's current DOM structure. If Gmail updates its UI, the selectors in `content.js` may need to be revised.
 
@@ -31,74 +30,6 @@ For each email row, the extension extracts three fields and tests them against t
 3. **Snippet** — preview text in the `.y2` element
 
 The first rule whose sender, subject, or snippet pattern matches wins. Rules are checked top-to-bottom in `classificationRules`, so order matters.
-
-## Categories
-
-### Services & Platforms
-
-| Category | Match method |
-|---|---|
-| `irctc` | Sender |
-| `reddit` | Sender |
-| `mural` | Sender |
-| `linkedin` | Sender |
-| `indeed` | Sender |
-| `grammarly` | Sender |
-| `github` | Sender |
-| `patreon` | Sender |
-| `replit` | Sender |
-| `lovable` | Sender |
-| `vercel` | Sender |
-| `openai` | Sender |
-| `cursor` | Sender |
-| `ollama` | Sender |
-| `google` | Sender |
-| `youtube` | Sender |
-| `microsoft` | Sender |
-| `quillbot` | Sender |
-| `unstop` | Sender |
-| `udemy` | Sender |
-| `leetcode` | Sender |
-| `hack2skill` | Sender |
-| `resume.io` | Sender |
-| `spotify` | Sender |
-| `samsung` | Sender |
-| `indigo` | Sender |
-| `goodreads` | Sender |
-| `moneycontrol` | Sender |
-| `steam` | Sender |
-
-### Finance & Banking
-
-| Category | Match method |
-|---|---|
-| `nse` | Sender |
-| `bse` | Sender |
-| `groww` | Sender |
-| `hdfcbank` | Sender |
-| `sbi` | Sender |
-| `motilaloswal` | Sender |
-| `franklintempleton` | Sender |
-
-### College & Academic
-
-| Category | Match method |
-|---|---|
-| `mensHostel` | Sender |
-| `nptel` | Sender + subject |
-| `moovit` | Sender + subject + snippet |
-| `academic` | Subject + snippet |
-
-### Personal & Other
-
-| Category | Match method |
-|---|---|
-| `irctc` | Sender |
-| `chotadhobi` | Sender + subject |
-| `internship` | Subject + snippet |
-| `garbage` | Subject + snippet |
-
-> `work` is defined in the file but currently commented out.
 
 ## Styling: solid vs. gradient
 
@@ -130,11 +61,9 @@ Any of the three arrays can be left empty (`[]`) if that field isn't needed for 
 
 | File | Purpose |
 |---|---|
-| `manifest.json` | Declares permissions, host access, popup, and content script |
+| `manifest.json` | Extension declaration and content script registration (0 permissions required) |
 | `content.js` | All rule definitions, extraction, classification, and DOM manipulation |
-| `popup.html` | Minimal popup UI shown when the extension icon is clicked |
-| `popup.js` | Re-injects `content.js` into the active tab when the popup opens |
-| `style.css` | Reserved for future external styles (currently empty) |
+| `style.css` | Row highlighting styles, badges, hover effects, and fade-in animations |
 
 ## Selector reference
 

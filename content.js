@@ -1,17 +1,5 @@
 // ---------------- 1. THE RULE ENGINE ----------------
 
-// Setting: when true, highlights are cleared after the user reads an email.
-// Persisted in chrome.storage.local, toggled via the popup.
-let _clearAfterRead = false;
-chrome.storage.local.get('clearAfterRead', (result) => {
-    _clearAfterRead = result.clearAfterRead || false;
-});
-chrome.storage.onChanged.addListener((changes) => {
-    if (changes.clearAfterRead) {
-        _clearAfterRead = changes.clearAfterRead.newValue;
-    }
-});
-
 const classificationRules = [
     {
         id: "Me",
@@ -634,33 +622,10 @@ function highlightEmails() {
         const isAlreadyKnown = _knownRowFingerprints.has(fingerprint);
         const hasHighlightedAttr = row.dataset.ehHighlighted === 'true';
         const hasRowClass = row.classList.contains('eh-row');
-        const isRead = row.classList.contains('yO') || (!row.classList.contains('zE') && !row.classList.contains('zF'));
-
-        // Handle clearAfterRead toggle: if user opened/read this email and setting is ON
-        if (_clearAfterRead && isRead && (hasHighlightedAttr || isAlreadyKnown)) {
-            delete row.dataset.ehHighlighted;
-            delete row.dataset.ehFp;
-            delete row.dataset.ehNoMatch;
-            _knownRowFingerprints.delete(fingerprint);
-            row.classList.remove('eh-row', 'eh-animate');
-            row.style.removeProperty('--eh-bg');
-            row.style.removeProperty('--eh-bg-image');
-            row.style.removeProperty('--eh-text');
-            row.style.removeProperty('--eh-accent');
-            row.style.removeProperty('--eh-stagger');
-            const oldBadge = row.querySelector('.custom-badge-group');
-            if (oldBadge) oldBadge.remove();
-            continue;
-        }
-
-        // Fast-path: if fingerprint matches, check if fully styled and badge is present
-        if (row.dataset.ehFp === fingerprint) {
-            const wasNoMatch = row.dataset.ehNoMatch === '1';
-            if (wasNoMatch) continue;
-
+        // Fast-path: if already matched, styled, and badged for this fingerprint, skip to avoid reflow/flicker
+        if (row.dataset.ehFp === fingerprint && hasRowClass && hasHighlightedAttr) {
             const hasBadge = Boolean(row.querySelector('.custom-badge-group'));
-            // If class, data attribute, and badge are all intact, skip this row
-            if (hasRowClass && hasHighlightedAttr && hasBadge) continue;
+            if (hasBadge) continue;
         }
 
         const matchedRule = getEmailCategory(emailData);
@@ -670,6 +635,7 @@ function highlightEmails() {
             if (hasRowClass || hasHighlightedAttr) {
                 row.classList.remove('eh-row', 'eh-animate');
                 delete row.dataset.ehHighlighted;
+                delete row.dataset.ehFp;
                 row.style.removeProperty('--eh-bg');
                 row.style.removeProperty('--eh-bg-image');
                 row.style.removeProperty('--eh-text');
@@ -678,13 +644,8 @@ function highlightEmails() {
                 const oldBadge = row.querySelector('.custom-badge-group');
                 if (oldBadge) oldBadge.remove();
             }
-            row.dataset.ehFp = fingerprint;
-            row.dataset.ehNoMatch = '1';
             continue;
         }
-
-        // Clear the no-match flag if previously set
-        delete row.dataset.ehNoMatch;
 
         const colors = getRuleBackgroundColors(matchedRule);
         const primaryColor = colors[0];
