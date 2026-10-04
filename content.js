@@ -121,7 +121,7 @@ const classificationRules = [
         id: "noreply@lovable.dev",
         backgroundColors: ["#ff7e0bcc", "#fd5b22cc", "#c469e4cc", "#5d67d9cc"],
         textColor: "#ffffff",
-        senders: ["noreply@lovable.dev"],
+        senders: ["@lovable.dev"],
         subjects: [],
         contents: []
     },
