@@ -433,6 +433,14 @@ const classificationRules = [
         subjects: [],
         contents: []
     },
+    {
+        id: "PodAI",
+        backgroundColors: ["#5222c9cc", "#4618afcc"],
+        textColor: "#e6e0f2ff",
+        senders: ["@pod.ai"],
+        subjects: [],
+        contents: []
+    },
     // {
     //     id: "24bbs",
     //     backgroundColor: "#3261e1a5",
@@ -446,8 +454,8 @@ const classificationRules = [
         backgroundColor: "#080808cc",
         textColor: "#ffffff",
         senders: [],
-        subjects: ["viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"],
-        contents: ["viteee", "newsletter", "raman research award", "dr. apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"]
+        subjects: ["viteee", "newsletter", "raman research award", "dr apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"],
+        contents: ["viteee", "newsletter", "raman research award", "dr apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"]
     },
     {
         id: "Otp_vtop",
@@ -470,8 +478,8 @@ const classificationRules = [
         backgroundColor: "#F8D7DAcc",
         textColor: "#000000",
         senders: ["@nptel.iitm.ac.in", "swayam", "onlinecourses@nptel.iitm.ac.in", "support@nptel.iitm.ac.in"],
-        subjects: ["nptel"],
-        contents: []
+        subjects: ["nptel", "mooc"],
+        contents: ["nptel", "mooc"]
     },
     {
         id: "chotadhobi",
@@ -510,16 +518,16 @@ const classificationRules = [
         backgroundColor: "#080808cc",
         textColor: "#ffffff",
         senders: [],
-        subjects: ["congratulations", "season greetings", "sports achievements", "Greetings"],
-        contents: ["congratulations", "season greetings", "sports achievements", "Greetings"]
+        subjects: ["congratulations", "season greetings", "sports achievements", "Greetings", "Poster Competition"],
+        contents: ["congratulations", "season greetings", "sports achievements", "Greetings", "Poster Competition"]
     },
     {
         id: "academic",
         backgroundColor: "#D680F0cc",
         textColor: "#000000",
         senders: ["@vit.ac.in"],
-        subjects: ["lab", "fat", "cat", "assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "workshop", "international transfer program"],
-        contents: ["lab", "fat", "cat", "assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "workshop", "international transfer program"]
+        subjects: ["lab", "fat", "cat", "assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "ideathon", "workshop", "international transfer program"],
+        contents: ["lab", "fat", "cat", "assignment", "quiz", "calendar", "project", "report", "rank", "library", "hackathon", "ideathon", "workshop", "international transfer program"]
     },
     // {
     //     id: "work",
