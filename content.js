@@ -429,7 +429,7 @@ const classificationRules = [
         id: "goldmanSachs",
         backgroundColor: "#5b95c3cc",
         textColor: "#303030ff",
-        senders: ["GSRecruiting@oracle.com"],
+        senders: ["@oracle.com"],
         subjects: [],
         contents: []
     },
