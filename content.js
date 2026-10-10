@@ -301,7 +301,7 @@ const classificationRules = [
         id: "moneycontrol",
         backgroundColors: ["#59ab37cc", "#086aa4cc"],
         textColor: "#ffffff",
-        senders: ["moneycontrol.com"],
+        senders: ["@moneycontrol.com"],
         subjects: [],
         contents: []
     },
@@ -309,7 +309,7 @@ const classificationRules = [
         id: "bookmyshow",
         backgroundColors: ["#555658cc", "#e1364bcc"],
         textColor: "#ffffff",
-        senders: ["bookmyshow.com"],
+        senders: ["@bookmyshow.com"],
         subjects: [],
         contents: []
     },
@@ -317,7 +317,7 @@ const classificationRules = [
         id: "jira",
         backgroundColors: ["#1190e6cc", "#041d28cc"],
         textColor: "#ffffff",
-        senders: ["atlassian.net", "atlassian.com"],
+        senders: ["@atlassian.net", "@atlassian.com"],
         subjects: [],
         contents: []
     },
@@ -325,7 +325,7 @@ const classificationRules = [
         id: "docker",
         backgroundColors: ["#cedeeacc", "#2291e7cc"],
         textColor: "#000000ff",
-        senders: ["docker.com"],
+        senders: ["@docker.com"],
         subjects: [],
         contents: []
     },
@@ -333,7 +333,7 @@ const classificationRules = [
         id: "anthropic",
         backgroundColor: "#d27354cc",
         textColor: "#000000ff",
-        senders: ["anthropic.com"],
+        senders: ["@anthropic.com"],
         subjects: [],
         contents: []
     },
