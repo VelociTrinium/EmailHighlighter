@@ -285,7 +285,7 @@ const classificationRules = [
         id: "medium",
         backgroundColor: "#ebe2d8cc",
         textColor: "#000000",
-        senders: ["medium.com"],
+        senders: ["@medium.com"],
         subjects: [],
         contents: []
     },
@@ -293,7 +293,7 @@ const classificationRules = [
         id: "read.ai",
         backgroundColor: "#7860f7cc",
         textColor: "#000000",
-        senders: ["support@e.read.ai", "@read.ai"],
+        senders: ["@e.read.ai", "@read.ai"],
         subjects: [],
         contents: []
     },
