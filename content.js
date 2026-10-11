@@ -454,8 +454,8 @@ const classificationRules = [
         backgroundColor: "#080808cc",
         textColor: "#ffffff",
         senders: [],
-        subjects: ["viteee", "newsletter", "raman research award", "dr apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"],
-        contents: ["viteee", "newsletter", "raman research award", "dr apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta"]
+        subjects: ["viteee", "newsletter", "raman research award", "dr apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta", "Mental Health"],
+        contents: ["viteee", "newsletter", "raman research award", "dr apj abdul kalam award", "graVITas", "Cultural Week", "Quanta", "Today's events", "UTSAV", "UMANG", "Newbie Fiesta", "Mental Health"]
     },
     {
         id: "Otp_vtop",
