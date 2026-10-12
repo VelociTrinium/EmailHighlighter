@@ -165,7 +165,7 @@ const classificationRules = [
         id: "microsoft",
         backgroundColors: ["#F25022cc", "#7FBA00cc", "#00A4EFcc", "#FFB900cc"],
         textColor: "#000000",
-        senders: ["@microsoft.com", "@email.careers.microsoft.com"],
+        senders: ["@microsoft.com", "@email.careers.microsoft.com", "@accountprotection.microsoft.com"],
         subjects: [],
         contents: []
     },
@@ -221,7 +221,7 @@ const classificationRules = [
         id: "hack2skill",
         backgroundColor: "#462170cc",
         textColor: "#ffffff",
-        senders: ["@hack2skill.com"],
+        senders: ["@hack2skill.com", "@no-reply.hack2skill.com"],
         subjects: [],
         contents: []
     },
