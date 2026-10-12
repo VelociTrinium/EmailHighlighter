@@ -165,7 +165,7 @@ const classificationRules = [
         id: "microsoft",
         backgroundColors: ["#F25022cc", "#7FBA00cc", "#00A4EFcc", "#FFB900cc"],
         textColor: "#000000",
-        senders: ["@microsoft.com"],
+        senders: ["@microsoft.com", "@email.careers.microsoft.com"],
         subjects: [],
         contents: []
     },
@@ -317,7 +317,7 @@ const classificationRules = [
         id: "jira",
         backgroundColors: ["#1190e6cc", "#041d28cc"],
         textColor: "#ffffff",
-        senders: ["@atlassian.net", "@atlassian.com"],
+        senders: ["atlassian.net", "atlassian.com"],
         subjects: [],
         contents: []
     },
