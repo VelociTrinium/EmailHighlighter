@@ -197,7 +197,7 @@ const classificationRules = [
         id: "unstop",
         backgroundColor: "#234E84cc",
         textColor: "#ffffff",
-        senders: ["@unstop.news", "@dare2compete.news"],
+        senders: ["@unstop.news", "@dare2compete.news", "@unstop.email"],
         subjects: [],
         contents: []
     },
