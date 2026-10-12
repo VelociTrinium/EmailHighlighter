@@ -85,7 +85,7 @@ const classificationRules = [
         id: "github",
         backgroundColor: "#23b75ccc",
         textColor: "#ffffff",
-        senders: ["@github.com"],
+        senders: ["@github.com", "@getgitguardian.com"],
         subjects: [],
         contents: []
     },
@@ -325,7 +325,7 @@ const classificationRules = [
         id: "docker",
         backgroundColors: ["#cedeeacc", "#2291e7cc"],
         textColor: "#000000ff",
-        senders: ["@docker.com"],
+        senders: ["@docker.com", "@notify.docker.com"],
         subjects: [],
         contents: []
     },
@@ -333,7 +333,7 @@ const classificationRules = [
         id: "anthropic",
         backgroundColor: "#d27354cc",
         textColor: "#000000ff",
-        senders: ["@anthropic.com"],
+        senders: ["@anthropic.com", "@email.anthropic.com"],
         subjects: [],
         contents: []
     },
