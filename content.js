@@ -322,6 +322,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "ubisoft",
+        backgroundColor: "#cedeeacc",
+        textColor: "#000000ff",
+        senders: ["@account.ubisoft.com"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "docker",
         backgroundColors: ["#cedeeacc", "#2291e7cc"],
         textColor: "#000000ff",
