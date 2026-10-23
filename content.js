@@ -21,7 +21,7 @@ const classificationRules = [
         id: "Office",
         backgroundColor: "#0e902acc",
         textColor: "#ffffff",
-        senders: ["rravisolns@gmail.com", "viren@benchmarksolution.com", "@benchmarksolution.com", "diyasanil4@gmail.com"],
+        senders: ["rravisolns@gmail.com", "viren@benchmarksolution.com", "@benchmarksolution.com", "diyasanil4@gmail.com", "sudharsanv23@gmail.com", "tapan.j@benchmarksolution.com"],
         subjects: [],
         contents: []
     },
