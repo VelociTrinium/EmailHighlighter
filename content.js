@@ -178,6 +178,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "meta",
+        backgroundColors: ["#007df3cc", "#0061d7cc"],
+        textColor: "#ffffff",
+        senders: ["@email.meta.com"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "quilbot",
         backgroundColor: "#088B4Ccc",
         textColor: "#ffffff",
