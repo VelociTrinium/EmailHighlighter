@@ -194,6 +194,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "cloudflare",
+        backgroundColors: ["#f2a93ecc", "#eb7c1fcc"],
+        textColor: "#000000",
+        senders: ["@em1.cloudflare.com"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "pinterest",
         backgroundColor: "#df0022cc",
         textColor: "#ffffff",
