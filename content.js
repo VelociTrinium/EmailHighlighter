@@ -713,7 +713,7 @@ function highlightEmails() {
         // Apply cascade animation ONLY for brand-new rows on first appearance.
         // Restored rows (e.g. returning from reading an email) never get .eh-animate or stagger.
         if (!isAlreadyKnown) {
-            row.style.setProperty('--eh-stagger', `${newRowCount * 12}ms`);
+            row.style.setProperty('--eh-stagger', `${newRowCount * 20}ms`);
             row.classList.add('eh-animate');
             newRowCount++;
             _knownRowFingerprints.add(fingerprint);
