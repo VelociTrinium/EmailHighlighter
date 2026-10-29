@@ -194,6 +194,14 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "mistral",
+        backgroundColors: ["#f7d100cc", "#f7aa00cc", "#f77e05cc", "#f24d0fcc", "#da0500cc"],
+        textColor: "#000000",
+        senders: ["@emails.mistral.ai"],
+        subjects: [],
+        contents: []
+    },
+    {
         id: "cloudflare",
         backgroundColors: ["#f2a93ecc", "#eb7c1fcc"],
         textColor: "#000000",
