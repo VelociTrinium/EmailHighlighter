@@ -209,7 +209,6 @@ const classificationRules = [
         subjects: [],
         contents: []
     },
-
     {
         id: "cloudflare",
         backgroundColors: ["#f2a93ecc", "#eb7c1fcc"],
@@ -580,9 +579,15 @@ const classificationRules = [
     // },
 ];
 
-// ---------------- 1b. PRE-PROCESS RULES (one-time at load) ----------------
-// Pre-lowercase all pattern strings once at startup.
-// This eliminates repeated .toLowerCase() calls inside the hot classification loop.
+// ---------------- 1b. PRE-PROCESS RULES & BUILD LOOKUP MAPS (one-time at load) ----------------
+// Pre-indexes sender rules into O(1) Maps:
+// - _exactSenderMap for full email addresses (e.g. "jay.mvbom@gmail.com")
+// - _domainSenderMap for domain prefixes (e.g. "@google.com")
+// - _generalRules for rules with subjects, contents, or non-domain substring patterns
+const _exactSenderMap = new Map();
+const _domainSenderMap = new Map();
+const _generalRules = [];
+
 (function preprocessRules() {
     for (const rule of classificationRules) {
         rule._senders = (rule.senders || []).map(s => s.toLowerCase());
@@ -591,6 +596,28 @@ const classificationRules = [
         rule._hasSenders = rule._senders.length > 0;
         rule._hasSubjects = rule._subjects.length > 0;
         rule._hasContents = rule._contents.length > 0;
+
+        let hasIndexedSender = false;
+        if (rule._hasSenders) {
+            for (const sender of rule._senders) {
+                if (sender.startsWith('@')) {
+                    if (!_domainSenderMap.has(sender)) {
+                        _domainSenderMap.set(sender, rule);
+                        hasIndexedSender = true;
+                    }
+                } else if (sender.includes('@')) {
+                    if (!_exactSenderMap.has(sender)) {
+                        _exactSenderMap.set(sender, rule);
+                        hasIndexedSender = true;
+                    }
+                }
+            }
+        }
+
+        // If rule has subjects, contents, or non-email sender strings, keep in general list
+        if (rule._hasSubjects || rule._hasContents || !hasIndexedSender) {
+            _generalRules.push(rule);
+        }
     }
 })();
 
@@ -605,7 +632,6 @@ function extractEmailData(row) {
     let subjectEl = row.querySelector('.bog');
     let subject = "";
     if (subjectEl) {
-        // Exclude badge text if a badge was inserted inside or around subjectEl
         const badge = row.querySelector('.custom-badge');
         if (badge && subjectEl.contains(badge)) {
             subject = subjectEl.textContent.replace(badge.textContent, '').trim().toLowerCase();
@@ -614,24 +640,32 @@ function extractEmailData(row) {
         }
     }
 
-    return { senderEmail, subject, snippet /*, mailHeader */ };
+    return { senderEmail, subject, snippet };
 }
 
 // ---------------- 3. CLASSIFICATION LOGIC ----------------
-// Inlined matching using pre-processed _senders/_subjects/_contents arrays.
-// Eliminates: matchesAny closure creation, null-guard overhead, per-keyword toLowerCase().
+// O(1) hash lookups first, then fallback to general rules
 function getEmailCategory(data) {
-    for (let rule of classificationRules) {
-        // Priority 1: Senders (pre-lowercased _senders)
-        if (rule._hasSenders && rule._senders.some(s => data.senderEmail.includes(s))) return rule;
+    const email = data.senderEmail;
+    if (email) {
+        // Priority 1a: Exact email match O(1)
+        const exactMatch = _exactSenderMap.get(email);
+        if (exactMatch) return exactMatch;
 
-        /* --- FROM CODE 2 (Expansion: Priority 2 Header) --- */
-        // if (rule.mailHeader && matchesAny(rule.mailHeader, data.mailHeader)) return rule;
+        // Priority 1b: Domain match O(1)
+        const atIdx = email.indexOf('@');
+        if (atIdx !== -1) {
+            const domain = email.slice(atIdx);
+            const domainMatch = _domainSenderMap.get(domain);
+            if (domainMatch) return domainMatch;
+        }
+    }
 
-        // Priority 3: Subject Line
+    // Priority 2: Fallback general rules (senders, subjects, contents)
+    for (let i = 0; i < _generalRules.length; i++) {
+        const rule = _generalRules[i];
+        if (rule._hasSenders && rule._senders.some(s => email.includes(s))) return rule;
         if (rule._hasSubjects && rule._subjects.some(s => data.subject.includes(s))) return rule;
-
-        // Priority 4: Content Snippet
         if (rule._hasContents && rule._contents.some(s => data.snippet.includes(s))) return rule;
     }
     return null;
@@ -652,11 +686,25 @@ function getSolidColor(color) {
 }
 
 // ---------------- 4. HIGHLIGHT FUNCTION ----------------
-// Optimized: skips already-processed rows via fingerprinting,
-// uses CSS custom properties + data-eh-highlighted / .eh-row instead of inline style writes,
-// applies .eh-animate cascade exclusively to brand-new rows (never on restore),
-// and hover effects are handled in style.css via :hover.
+// Template node for badge cloning
+const _badgeTemplate = document.createElement('span');
+_badgeTemplate.className = 'custom-badge-group';
+const _badgeInnerTemplate = document.createElement('span');
+_badgeInnerTemplate.className = 'custom-badge';
+_badgeTemplate.appendChild(_badgeInnerTemplate);
+
+// Bounded Set to prevent long-term memory growth (max 1000 items)
 const _knownRowFingerprints = new Set();
+function rememberFingerprint(fp) {
+    if (_knownRowFingerprints.size >= 1000) {
+        let count = 0;
+        for (const item of _knownRowFingerprints) {
+            _knownRowFingerprints.delete(item);
+            if (++count >= 200) break;
+        }
+    }
+    _knownRowFingerprints.add(fp);
+}
 
 function highlightEmails() {
     const emails = document.querySelectorAll('tr[jscontroller]');
@@ -664,23 +712,25 @@ function highlightEmails() {
 
     for (let i = 0; i < emails.length; i++) {
         const row = emails[i];
-        const emailData = extractEmailData(row);
 
-        // Fingerprint = sender + subject.
-        const fingerprint = emailData.senderEmail + '\t' + emailData.subject;
+        // 1. FAST-PATH: If already evaluated and valid, skip immediately (<0.01ms per row)
+        if (row.dataset.ehProcessed === 'true') {
+            if (row.dataset.ehHighlighted === 'true') {
+                if (row.classList.contains('eh-row')) continue;
+            } else {
+                continue;
+            }
+        }
+
+        const emailData = extractEmailData(row);
+        const fingerprint = emailData.senderEmail + '	' + emailData.subject;
         const isAlreadyKnown = _knownRowFingerprints.has(fingerprint);
         const hasHighlightedAttr = row.dataset.ehHighlighted === 'true';
         const hasRowClass = row.classList.contains('eh-row');
-        // Fast-path: if already matched, styled, and badged for this fingerprint, skip to avoid reflow/flicker
-        if (row.dataset.ehFp === fingerprint && hasRowClass && hasHighlightedAttr) {
-            const hasBadge = Boolean(row.querySelector('.custom-badge-group'));
-            if (hasBadge) continue;
-        }
 
         const matchedRule = getEmailCategory(emailData);
 
         if (!matchedRule) {
-            // Clean up if this row was previously highlighted but no longer matches
             if (hasRowClass || hasHighlightedAttr) {
                 row.classList.remove('eh-row', 'eh-animate');
                 delete row.dataset.ehHighlighted;
@@ -693,6 +743,7 @@ function highlightEmails() {
                 const oldBadge = row.querySelector('.custom-badge-group');
                 if (oldBadge) oldBadge.remove();
             }
+            row.dataset.ehProcessed = 'true';
             continue;
         }
 
@@ -700,44 +751,35 @@ function highlightEmails() {
         const primaryColor = colors[0];
         const accentColor = getSolidColor(primaryColor);
 
-        // Set CSS custom properties — read by .eh-row and tr[data-eh-highlighted="true"]
         row.style.setProperty('--eh-bg', primaryColor);
         row.style.setProperty('--eh-bg-image', colors.length > 1 ? `linear-gradient(90deg, ${colors.join(", ")})` : 'none');
         row.style.setProperty('--eh-text', matchedRule.textColor);
         row.style.setProperty('--eh-accent', accentColor);
 
-        // Mark as highlighted via persistent data attribute (survives Gmail className rewrites)
         row.dataset.ehHighlighted = 'true';
         row.classList.add('eh-row');
 
-        // Apply cascade animation ONLY for brand-new rows on first appearance.
-        // Restored rows (e.g. returning from reading an email) never get .eh-animate or stagger.
         if (!isAlreadyKnown) {
             row.style.setProperty('--eh-stagger', `${Math.min(newRowCount * 4, 60)}ms`);
             row.classList.add('eh-animate');
             newRowCount++;
-            _knownRowFingerprints.add(fingerprint);
+            rememberFingerprint(fingerprint);
         } else {
             row.style.removeProperty('--eh-stagger');
             row.classList.remove('eh-animate');
         }
 
-        // Add classification badge (skip if already present)
+        // Add classification badge using template cloning
         const subjectEl = row.querySelector('.bog');
         if (subjectEl && !row.querySelector('.custom-badge-group')) {
-            const badgeGroup = document.createElement('span');
-            badgeGroup.className = 'custom-badge-group';
-
-            const badge = document.createElement('span');
-            badge.className = 'custom-badge';
-            badge.innerText = matchedRule.id.charAt(0).toUpperCase() + matchedRule.id.slice(1).toLowerCase();
+            const badgeGroup = _badgeTemplate.cloneNode(true);
+            const badge = badgeGroup.firstChild;
+            badge.textContent = matchedRule.id.charAt(0).toUpperCase() + matchedRule.id.slice(1).toLowerCase();
             badge.style.background = colors.length > 1
                 ? `linear-gradient(90deg, ${colors.join(', ')})`
                 : accentColor;
             badge.style.color = matchedRule.textColor === "inherit" || matchedRule.textColor === "" ? "white" : matchedRule.textColor;
 
-            badgeGroup.appendChild(badge);
-            // Insert before subjectEl as a sibling if parent exists, else inside subjectEl
             if (subjectEl.parentNode) {
                 subjectEl.parentNode.insertBefore(badgeGroup, subjectEl);
             } else {
@@ -746,6 +788,7 @@ function highlightEmails() {
         }
 
         row.dataset.ehFp = fingerprint;
+        row.dataset.ehProcessed = 'true';
     }
 }
 
@@ -757,7 +800,6 @@ function highlightOpenedEmail() {
     let subject = document.querySelector('h2')?.textContent || "";
     let text = subject.toLowerCase();
 
-    // Simplified logic for open view
     if (text.includes("internship")) header.style.backgroundColor = "#d4edda";
     else if (text.includes("holiday") || text.includes("announcement")) header.style.backgroundColor = "#fff3cd";
     else if (text.includes("assignment") || text.includes("meeting")) header.style.backgroundColor = "#cce5ff";
@@ -766,12 +808,10 @@ function highlightOpenedEmail() {
 }
 
 // ---------------- 6. OBSERVERS & DETECTORS ----------------
-let lastUrl = location.href; // Fixed: Global variable declaration from Code 1
-
-// Debounce via requestAnimationFrame:
-// Coalesces all DOM mutations within a single frame into one call,
-// and runs both list and open-email highlights in the same pass.
 let _rafPending = false;
+let _emailObserver = null;
+let _currentObserverTarget = null;
+
 function scheduleHighlight() {
     if (_rafPending) return;
     _rafPending = true;
@@ -779,12 +819,24 @@ function scheduleHighlight() {
         _rafPending = false;
         highlightEmails();
         highlightOpenedEmail();
+        updateObserverTarget();
     });
 }
 
+function updateObserverTarget() {
+    if (!_emailObserver) return;
+    // Prefer scoping directly to Gmail's main email pane if mounted
+    const target = document.querySelector('div[role="main"]') || document.body;
+    if (target !== _currentObserverTarget) {
+        _currentObserverTarget = target;
+        _emailObserver.disconnect();
+        _emailObserver.observe(_currentObserverTarget, { childList: true, subtree: true });
+    }
+}
+
 function observeEmailChanges() {
-    const observer = new MutationObserver((mutations) => {
-        // Prevent feedback loop: ignore self-mutations caused by inserting badges
+    _emailObserver = new MutationObserver((mutations) => {
+        // Prevent feedback loops: ignore mutations triggered exclusively by internal badges
         let hasExternalChange = false;
         for (let i = 0; i < mutations.length; i++) {
             const added = mutations[i].addedNodes;
@@ -808,7 +860,8 @@ function observeEmailChanges() {
         }
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
+    _currentObserverTarget = document.querySelector('div[role="main"]') || document.body;
+    _emailObserver.observe(_currentObserverTarget, { childList: true, subtree: true });
 }
 
 // ---------------- INIT ----------------
