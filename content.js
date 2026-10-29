@@ -209,7 +209,7 @@ const classificationRules = [
         subjects: [],
         contents: []
     },
-    
+
     {
         id: "cloudflare",
         backgroundColors: ["#f2a93ecc", "#eb7c1fcc"],
@@ -600,7 +600,7 @@ function extractEmailData(row) {
     let senderEmail = senderEl ? senderEl.getAttribute('email').toLowerCase() : "";
 
     let snippetEl = row.querySelector('.y2');
-    let snippet = snippetEl ? snippetEl.innerText.toLowerCase() : "";
+    let snippet = snippetEl ? snippetEl.textContent.toLowerCase() : "";
 
     let subjectEl = row.querySelector('.bog');
     let subject = "";
@@ -608,9 +608,9 @@ function extractEmailData(row) {
         // Exclude badge text if a badge was inserted inside or around subjectEl
         const badge = row.querySelector('.custom-badge');
         if (badge && subjectEl.contains(badge)) {
-            subject = subjectEl.innerText.replace(badge.innerText, '').trim().toLowerCase();
+            subject = subjectEl.textContent.replace(badge.textContent, '').trim().toLowerCase();
         } else {
-            subject = subjectEl.innerText.trim().toLowerCase();
+            subject = subjectEl.textContent.trim().toLowerCase();
         }
     }
 
@@ -713,7 +713,7 @@ function highlightEmails() {
         // Apply cascade animation ONLY for brand-new rows on first appearance.
         // Restored rows (e.g. returning from reading an email) never get .eh-animate or stagger.
         if (!isAlreadyKnown) {
-            row.style.setProperty('--eh-stagger', `${newRowCount * 20}ms`);
+            row.style.setProperty('--eh-stagger', `${Math.min(newRowCount * 4, 60)}ms`);
             row.classList.add('eh-animate');
             newRowCount++;
             _knownRowFingerprints.add(fingerprint);
@@ -754,7 +754,7 @@ function highlightOpenedEmail() {
     let header = document.querySelector('.ha');
     if (!header || header.dataset.processed) return;
 
-    let subject = document.querySelector('h2')?.innerText || "";
+    let subject = document.querySelector('h2')?.textContent || "";
     let text = subject.toLowerCase();
 
     // Simplified logic for open view
@@ -769,9 +769,8 @@ function highlightOpenedEmail() {
 let lastUrl = location.href; // Fixed: Global variable declaration from Code 1
 
 // Debounce via requestAnimationFrame:
-// Gmail fires 100s of DOM mutations/sec during load. Without this,
-// highlightEmails() was called on EVERY mutation — the #1 perf killer.
-// Now, all mutations within a single frame are coalesced into one call.
+// Coalesces all DOM mutations within a single frame into one call,
+// and runs both list and open-email highlights in the same pass.
 let _rafPending = false;
 function scheduleHighlight() {
     if (_rafPending) return;
@@ -779,34 +778,42 @@ function scheduleHighlight() {
     requestAnimationFrame(() => {
         _rafPending = false;
         highlightEmails();
+        highlightOpenedEmail();
     });
-}
-
-function observeUrlChange() {
-    const observer = new MutationObserver(() => {
-        if (location.href !== lastUrl) {
-            lastUrl = location.href;
-            // Immediate pass on URL change
-            scheduleHighlight();
-            // Follow-up pass in case Gmail renders rows asynchronously
-            setTimeout(scheduleHighlight, 500);
-        }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
 }
 
 function observeEmailChanges() {
-    const observer = new MutationObserver(scheduleHighlight);
+    const observer = new MutationObserver((mutations) => {
+        // Prevent feedback loop: ignore self-mutations caused by inserting badges
+        let hasExternalChange = false;
+        for (let i = 0; i < mutations.length; i++) {
+            const added = mutations[i].addedNodes;
+            for (let j = 0; j < added.length; j++) {
+                const node = added[j];
+                if (node.nodeType === 1) {
+                    if (!node.classList.contains('custom-badge-group') && !node.classList.contains('custom-badge')) {
+                        hasExternalChange = true;
+                        break;
+                    }
+                } else {
+                    hasExternalChange = true;
+                    break;
+                }
+            }
+            if (hasExternalChange) break;
+        }
+
+        if (hasExternalChange || mutations.some(m => m.removedNodes.length > 0)) {
+            scheduleHighlight();
+        }
+    });
+
     observer.observe(document.body, { childList: true, subtree: true });
 }
 
-const _headerObserver = new MutationObserver(() => highlightOpenedEmail());
-_headerObserver.observe(document.body, { childList: true, subtree: true });
-
 // ---------------- INIT ----------------
 function init() {
-    highlightEmails();
-    // observeUrlChange();
+    scheduleHighlight();
     observeEmailChanges();
 }
 
