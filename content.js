@@ -202,6 +202,15 @@ const classificationRules = [
         contents: []
     },
     {
+        id: "openrouter",
+        backgroundColor: "#c2f700cc",
+        textColor: "#000000",
+        senders: ["@openrouter.ai"],
+        subjects: [],
+        contents: []
+    },
+    
+    {
         id: "cloudflare",
         backgroundColors: ["#f2a93ecc", "#eb7c1fcc"],
         textColor: "#000000",
