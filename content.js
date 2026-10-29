@@ -209,7 +209,6 @@ const classificationRules = [
         subjects: [],
         contents: []
     },
-    
     {
         id: "cloudflare",
         backgroundColors: ["#f2a93ecc", "#eb7c1fcc"],
@@ -580,62 +579,10 @@ const classificationRules = [
     // },
 ];
 
-// ---------------- 1b. PRE-PROCESS RULES (one-time at load) ----------------
-// Pre-lowercase all pattern strings once at startup.
-// This eliminates repeated .toLowerCase() calls inside the hot classification loop.
-(function preprocessRules() {
-    for (const rule of classificationRules) {
-        rule._senders = (rule.senders || []).map(s => s.toLowerCase());
-        rule._subjects = (rule.subjects || []).map(s => s.toLowerCase());
-        rule._contents = (rule.contents || []).map(s => s.toLowerCase());
-        rule._hasSenders = rule._senders.length > 0;
-        rule._hasSubjects = rule._subjects.length > 0;
-        rule._hasContents = rule._contents.length > 0;
-    }
-})();
-
-// ---------------- 2. DATA EXTRACTION ----------------
-function extractEmailData(row) {
-    let senderEl = row.querySelector('[email]');
-    let senderEmail = senderEl ? senderEl.getAttribute('email').toLowerCase() : "";
-
-    let snippetEl = row.querySelector('.y2');
-    let snippet = snippetEl ? snippetEl.innerText.toLowerCase() : "";
-
-    let subjectEl = row.querySelector('.bog');
-    let subject = "";
-    if (subjectEl) {
-        // Exclude badge text if a badge was inserted inside or around subjectEl
-        const badge = row.querySelector('.custom-badge');
-        if (badge && subjectEl.contains(badge)) {
-            subject = subjectEl.innerText.replace(badge.innerText, '').trim().toLowerCase();
-        } else {
-            subject = subjectEl.innerText.trim().toLowerCase();
-        }
-    }
-
-    return { senderEmail, subject, snippet /*, mailHeader */ };
-}
-
-// ---------------- 3. CLASSIFICATION LOGIC ----------------
-// Inlined matching using pre-processed _senders/_subjects/_contents arrays.
-// Eliminates: matchesAny closure creation, null-guard overhead, per-keyword toLowerCase().
-function getEmailCategory(data) {
-    for (let rule of classificationRules) {
-        // Priority 1: Senders (pre-lowercased _senders)
-        if (rule._hasSenders && rule._senders.some(s => data.senderEmail.includes(s))) return rule;
-
-        /* --- FROM CODE 2 (Expansion: Priority 2 Header) --- */
-        // if (rule.mailHeader && matchesAny(rule.mailHeader, data.mailHeader)) return rule;
-
-        // Priority 3: Subject Line
-        if (rule._hasSubjects && rule._subjects.some(s => data.subject.includes(s))) return rule;
-
-        // Priority 4: Content Snippet
-        if (rule._hasContents && rule._contents.some(s => data.snippet.includes(s))) return rule;
-    }
-    return null;
-}
+// ---------------- 1b. PRE-PROCESS RULES & BUILD LOOKUP MAPS (one-time at load) ----------------
+const _exactSenderMap = new Map();
+const _domainSenderMap = new Map();
+const _generalRules = [];
 
 function getRuleBackgroundColors(rule) {
     if (Array.isArray(rule.backgroundColors) && rule.backgroundColors.length) {
@@ -651,12 +598,88 @@ function getSolidColor(color) {
     return color && color.length >= 7 ? color.substring(0, 7) : color;
 }
 
-// ---------------- 4. HIGHLIGHT FUNCTION ----------------
-// Optimized: skips already-processed rows via fingerprinting,
-// uses CSS custom properties + data-eh-highlighted / .eh-row instead of inline style writes,
-// applies .eh-animate cascade exclusively to brand-new rows (never on restore),
-// and hover effects are handled in style.css via :hover.
+(function preprocessRules() {
+    let dynamicCss = '';
+
+    for (const rule of classificationRules) {
+        rule._senders = (rule.senders || []).map(s => s.toLowerCase());
+        rule._subjects = (rule.subjects || []).map(s => s.toLowerCase());
+        rule._contents = (rule.contents || []).map(s => s.toLowerCase());
+        rule._hasSenders = rule._senders.length > 0;
+        rule._hasSubjects = rule._subjects.length > 0;
+        rule._hasContents = rule._contents.length > 0;
+
+        // Pre-compute visual styles and safe CSS class
+        rule._class = 'eh-r-' + rule.id.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const colors = getRuleBackgroundColors(rule);
+        rule._primaryColor = colors[0];
+        rule._accentColor = getSolidColor(rule._primaryColor);
+        rule._bgImage = colors.length > 1 ? `linear-gradient(90deg, ${colors.join(", ")})` : 'none';
+        rule._textColor = rule.textColor || 'inherit';
+
+        // Pre-compute badge data
+        rule._badgeText = rule.id.charAt(0).toUpperCase() + rule.id.slice(1).toLowerCase();
+        rule._badgeBg = colors.length > 1 ? `linear-gradient(90deg, ${colors.join(', ')})` : rule._accentColor;
+        rule._badgeColor = rule._textColor === "inherit" || rule._textColor === "" ? "white" : rule._textColor;
+
+        // Generate class-based CSS rule
+        dynamicCss += `
+.${rule._class} {
+    --eh-bg: ${rule._primaryColor} !important;
+    --eh-bg-image: ${rule._bgImage} !important;
+    --eh-text: ${rule._textColor} !important;
+    --eh-accent: ${rule._accentColor} !important;
+}`;
+
+        let hasIndexedSender = false;
+        if (rule._hasSenders) {
+            for (const sender of rule._senders) {
+                if (sender.startsWith('@')) {
+                    if (!_domainSenderMap.has(sender)) {
+                        _domainSenderMap.set(sender, rule);
+                        hasIndexedSender = true;
+                    }
+                } else if (sender.includes('@')) {
+                    if (!_exactSenderMap.has(sender)) {
+                        _exactSenderMap.set(sender, rule);
+                        hasIndexedSender = true;
+                    }
+                }
+            }
+        }
+
+        if (rule._hasSubjects || rule._hasContents || !hasIndexedSender) {
+            _generalRules.push(rule);
+        }
+    }
+
+    // Inject compiled stylesheet once for high-performance class-based styling
+    const styleEl = document.createElement('style');
+    styleEl.id = 'eh-dynamic-rules';
+    styleEl.textContent = dynamicCss;
+    (document.head || document.documentElement).appendChild(styleEl);
+})();
+
+// ---------------- 2. HIGHLIGHT FUNCTION ----------------
+// Template node for badge cloning
+const _badgeTemplate = document.createElement('span');
+_badgeTemplate.className = 'custom-badge-group';
+const _badgeInnerTemplate = document.createElement('span');
+_badgeInnerTemplate.className = 'custom-badge';
+_badgeTemplate.appendChild(_badgeInnerTemplate);
+
+// Bounded Set to prevent long-term memory growth (max 1000 items)
 const _knownRowFingerprints = new Set();
+function rememberFingerprint(fp) {
+    if (_knownRowFingerprints.size >= 1000) {
+        let count = 0;
+        for (const item of _knownRowFingerprints) {
+            _knownRowFingerprints.delete(item);
+            if (++count >= 200) break;
+        }
+    }
+    _knownRowFingerprints.add(fp);
+}
 
 function highlightEmails() {
     const emails = document.querySelectorAll('tr[jscontroller]');
@@ -664,80 +687,118 @@ function highlightEmails() {
 
     for (let i = 0; i < emails.length; i++) {
         const row = emails[i];
-        const emailData = extractEmailData(row);
 
-        // Fingerprint = sender + subject.
-        const fingerprint = emailData.senderEmail + '\t' + emailData.subject;
+        // 1. FAST-PATH: If already evaluated and valid, skip immediately (<0.01ms per row)
+        if (row.dataset.ehProcessed === 'true') {
+            if (row.dataset.ehHighlighted === 'true') {
+                if (row.classList.contains('eh-row')) continue;
+            } else {
+                continue;
+            }
+        }
+
+        // 2. LAZY TWO-TIER EXTRACTION & MATCHING
+        const senderEl = row.querySelector('[email]');
+        const senderEmail = senderEl ? senderEl.getAttribute('email').toLowerCase() : "";
+
+        // Query subject once (needed for badge positioning and row fingerprint)
+        const subjectEl = row.querySelector('.bog');
+        let subject = "";
+        if (subjectEl) {
+            const badge = row.querySelector('.custom-badge');
+            if (badge && subjectEl.contains(badge)) {
+                subject = subjectEl.textContent.replace(badge.textContent, '').trim().toLowerCase();
+            } else {
+                subject = subjectEl.textContent.trim().toLowerCase();
+            }
+        }
+
+        // Priority 1: Fast O(1) sender hash lookup
+        let matchedRule = null;
+        if (senderEmail) {
+            matchedRule = _exactSenderMap.get(senderEmail);
+            if (!matchedRule) {
+                const atIdx = senderEmail.indexOf('@');
+                if (atIdx !== -1) {
+                    matchedRule = _domainSenderMap.get(senderEmail.slice(atIdx));
+                }
+            }
+        }
+
+        // Priority 2: Fallback general rules (checks subjects first, lazily fetches snippet only if needed)
+        if (!matchedRule) {
+            let snippet = null;
+            for (let j = 0; j < _generalRules.length; j++) {
+                const rule = _generalRules[j];
+                if (rule._hasSenders && rule._senders.some(s => senderEmail.includes(s))) {
+                    matchedRule = rule;
+                    break;
+                }
+                if (rule._hasSubjects && rule._subjects.some(s => subject.includes(s))) {
+                    matchedRule = rule;
+                    break;
+                }
+                if (rule._hasContents) {
+                    if (snippet === null) {
+                        const snippetEl = row.querySelector('.y2');
+                        snippet = snippetEl ? snippetEl.textContent.toLowerCase() : "";
+                    }
+                    if (rule._contents.some(s => snippet.includes(s))) {
+                        matchedRule = rule;
+                        break;
+                    }
+                }
+            }
+        }
+
+        const fingerprint = senderEmail + '\t' + subject;
         const isAlreadyKnown = _knownRowFingerprints.has(fingerprint);
         const hasHighlightedAttr = row.dataset.ehHighlighted === 'true';
         const hasRowClass = row.classList.contains('eh-row');
-        // Fast-path: if already matched, styled, and badged for this fingerprint, skip to avoid reflow/flicker
-        if (row.dataset.ehFp === fingerprint && hasRowClass && hasHighlightedAttr) {
-            const hasBadge = Boolean(row.querySelector('.custom-badge-group'));
-            if (hasBadge) continue;
-        }
-
-        const matchedRule = getEmailCategory(emailData);
 
         if (!matchedRule) {
-            // Clean up if this row was previously highlighted but no longer matches
             if (hasRowClass || hasHighlightedAttr) {
                 row.classList.remove('eh-row', 'eh-animate');
+                if (row.dataset.ehClass) {
+                    row.classList.remove(row.dataset.ehClass);
+                    delete row.dataset.ehClass;
+                }
                 delete row.dataset.ehHighlighted;
                 delete row.dataset.ehFp;
-                row.style.removeProperty('--eh-bg');
-                row.style.removeProperty('--eh-bg-image');
-                row.style.removeProperty('--eh-text');
-                row.style.removeProperty('--eh-accent');
                 row.style.removeProperty('--eh-stagger');
                 const oldBadge = row.querySelector('.custom-badge-group');
                 if (oldBadge) oldBadge.remove();
             }
+            row.dataset.ehProcessed = 'true';
             continue;
         }
 
-        const colors = getRuleBackgroundColors(matchedRule);
-        const primaryColor = colors[0];
-        const accentColor = getSolidColor(primaryColor);
-
-        // Set CSS custom properties — read by .eh-row and tr[data-eh-highlighted="true"]
-        row.style.setProperty('--eh-bg', primaryColor);
-        row.style.setProperty('--eh-bg-image', colors.length > 1 ? `linear-gradient(90deg, ${colors.join(", ")})` : 'none');
-        row.style.setProperty('--eh-text', matchedRule.textColor);
-        row.style.setProperty('--eh-accent', accentColor);
-
-        // Mark as highlighted via persistent data attribute (survives Gmail className rewrites)
+        // 3. APPLY CLASS-BASED STYLING (Replaces 4 inline style.setProperty calls)
+        if (row.dataset.ehClass && row.dataset.ehClass !== matchedRule._class) {
+            row.classList.remove(row.dataset.ehClass);
+        }
+        row.dataset.ehClass = matchedRule._class;
         row.dataset.ehHighlighted = 'true';
-        row.classList.add('eh-row');
+        row.classList.add('eh-row', matchedRule._class);
 
-        // Apply cascade animation ONLY for brand-new rows on first appearance.
-        // Restored rows (e.g. returning from reading an email) never get .eh-animate or stagger.
         if (!isAlreadyKnown) {
-            row.style.setProperty('--eh-stagger', `${newRowCount * 20}ms`);
+            row.style.setProperty('--eh-stagger', `${Math.min(newRowCount * 4, 60)}ms`);
             row.classList.add('eh-animate');
             newRowCount++;
-            _knownRowFingerprints.add(fingerprint);
+            rememberFingerprint(fingerprint);
         } else {
             row.style.removeProperty('--eh-stagger');
             row.classList.remove('eh-animate');
         }
 
-        // Add classification badge (skip if already present)
-        const subjectEl = row.querySelector('.bog');
+        // 4. ADD BADGE USING PRE-COMPUTED DATA & CLONING
         if (subjectEl && !row.querySelector('.custom-badge-group')) {
-            const badgeGroup = document.createElement('span');
-            badgeGroup.className = 'custom-badge-group';
+            const badgeGroup = _badgeTemplate.cloneNode(true);
+            const badge = badgeGroup.firstChild;
+            badge.textContent = matchedRule._badgeText;
+            badge.style.background = matchedRule._badgeBg;
+            badge.style.color = matchedRule._badgeColor;
 
-            const badge = document.createElement('span');
-            badge.className = 'custom-badge';
-            badge.innerText = matchedRule.id.charAt(0).toUpperCase() + matchedRule.id.slice(1).toLowerCase();
-            badge.style.background = colors.length > 1
-                ? `linear-gradient(90deg, ${colors.join(', ')})`
-                : accentColor;
-            badge.style.color = matchedRule.textColor === "inherit" || matchedRule.textColor === "" ? "white" : matchedRule.textColor;
-
-            badgeGroup.appendChild(badge);
-            // Insert before subjectEl as a sibling if parent exists, else inside subjectEl
             if (subjectEl.parentNode) {
                 subjectEl.parentNode.insertBefore(badgeGroup, subjectEl);
             } else {
@@ -746,18 +807,22 @@ function highlightEmails() {
         }
 
         row.dataset.ehFp = fingerprint;
+        row.dataset.ehProcessed = 'true';
     }
 }
 
-// ---------------- 5. OPENED EMAIL HIGHLIGHTER ----------------
+// ---------------- 3. OPENED EMAIL HIGHLIGHTER ----------------
 function highlightOpenedEmail() {
-    let header = document.querySelector('.ha');
+    // Route guard: only check if URL hash indicates an opened email thread (contains a '/')
+    const hash = location.hash;
+    if (!hash || !hash.includes('/')) return;
+
+    const header = document.querySelector('.ha');
     if (!header || header.dataset.processed) return;
 
-    let subject = document.querySelector('h2')?.innerText || "";
-    let text = subject.toLowerCase();
+    const subject = document.querySelector('h2')?.textContent || "";
+    const text = subject.toLowerCase();
 
-    // Simplified logic for open view
     if (text.includes("internship")) header.style.backgroundColor = "#d4edda";
     else if (text.includes("holiday") || text.includes("announcement")) header.style.backgroundColor = "#fff3cd";
     else if (text.includes("assignment") || text.includes("meeting")) header.style.backgroundColor = "#cce5ff";
@@ -765,48 +830,64 @@ function highlightOpenedEmail() {
     header.dataset.processed = "true";
 }
 
-// ---------------- 6. OBSERVERS & DETECTORS ----------------
-let lastUrl = location.href; // Fixed: Global variable declaration from Code 1
-
-// Debounce via requestAnimationFrame:
-// Gmail fires 100s of DOM mutations/sec during load. Without this,
-// highlightEmails() was called on EVERY mutation — the #1 perf killer.
-// Now, all mutations within a single frame are coalesced into one call.
+// ---------------- 4. OBSERVERS & DETECTORS ----------------
 let _rafPending = false;
+let _emailObserver = null;
+let _currentObserverTarget = null;
+
 function scheduleHighlight() {
     if (_rafPending) return;
     _rafPending = true;
     requestAnimationFrame(() => {
         _rafPending = false;
         highlightEmails();
+        highlightOpenedEmail();
+        updateObserverTarget();
     });
 }
 
-function observeUrlChange() {
-    const observer = new MutationObserver(() => {
-        if (location.href !== lastUrl) {
-            lastUrl = location.href;
-            // Immediate pass on URL change
-            scheduleHighlight();
-            // Follow-up pass in case Gmail renders rows asynchronously
-            setTimeout(scheduleHighlight, 500);
-        }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+function updateObserverTarget() {
+    if (!_emailObserver) return;
+    const target = document.querySelector('div[role="main"]') || document.body;
+    if (target !== _currentObserverTarget) {
+        _currentObserverTarget = target;
+        _emailObserver.disconnect();
+        _emailObserver.observe(_currentObserverTarget, { childList: true, subtree: true });
+    }
 }
 
 function observeEmailChanges() {
-    const observer = new MutationObserver(scheduleHighlight);
-    observer.observe(document.body, { childList: true, subtree: true });
-}
+    _emailObserver = new MutationObserver((mutations) => {
+        let hasExternalChange = false;
+        for (let i = 0; i < mutations.length; i++) {
+            const added = mutations[i].addedNodes;
+            for (let j = 0; j < added.length; j++) {
+                const node = added[j];
+                if (node.nodeType === 1) {
+                    if (!node.classList.contains('custom-badge-group') && !node.classList.contains('custom-badge')) {
+                        hasExternalChange = true;
+                        break;
+                    }
+                } else {
+                    hasExternalChange = true;
+                    break;
+                }
+            }
+            if (hasExternalChange) break;
+        }
 
-const _headerObserver = new MutationObserver(() => highlightOpenedEmail());
-_headerObserver.observe(document.body, { childList: true, subtree: true });
+        if (hasExternalChange || mutations.some(m => m.removedNodes.length > 0)) {
+            scheduleHighlight();
+        }
+    });
+
+    _currentObserverTarget = document.querySelector('div[role="main"]') || document.body;
+    _emailObserver.observe(_currentObserverTarget, { childList: true, subtree: true });
+}
 
 // ---------------- INIT ----------------
 function init() {
-    highlightEmails();
-    // observeUrlChange();
+    scheduleHighlight();
     observeEmailChanges();
 }
 
