@@ -580,15 +580,27 @@ const classificationRules = [
 ];
 
 // ---------------- 1b. PRE-PROCESS RULES & BUILD LOOKUP MAPS (one-time at load) ----------------
-// Pre-indexes sender rules into O(1) Maps:
-// - _exactSenderMap for full email addresses (e.g. "jay.mvbom@gmail.com")
-// - _domainSenderMap for domain prefixes (e.g. "@google.com")
-// - _generalRules for rules with subjects, contents, or non-domain substring patterns
 const _exactSenderMap = new Map();
 const _domainSenderMap = new Map();
 const _generalRules = [];
 
+function getRuleBackgroundColors(rule) {
+    if (Array.isArray(rule.backgroundColors) && rule.backgroundColors.length) {
+        return rule.backgroundColors;
+    }
+    if (rule.backgroundColor) {
+        return [rule.backgroundColor];
+    }
+    return ["transparent"];
+}
+
+function getSolidColor(color) {
+    return color && color.length >= 7 ? color.substring(0, 7) : color;
+}
+
 (function preprocessRules() {
+    let dynamicCss = '';
+
     for (const rule of classificationRules) {
         rule._senders = (rule.senders || []).map(s => s.toLowerCase());
         rule._subjects = (rule.subjects || []).map(s => s.toLowerCase());
@@ -596,6 +608,28 @@ const _generalRules = [];
         rule._hasSenders = rule._senders.length > 0;
         rule._hasSubjects = rule._subjects.length > 0;
         rule._hasContents = rule._contents.length > 0;
+
+        // Pre-compute visual styles and safe CSS class
+        rule._class = 'eh-r-' + rule.id.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const colors = getRuleBackgroundColors(rule);
+        rule._primaryColor = colors[0];
+        rule._accentColor = getSolidColor(rule._primaryColor);
+        rule._bgImage = colors.length > 1 ? `linear-gradient(90deg, ${colors.join(", ")})` : 'none';
+        rule._textColor = rule.textColor || 'inherit';
+
+        // Pre-compute badge data
+        rule._badgeText = rule.id.charAt(0).toUpperCase() + rule.id.slice(1).toLowerCase();
+        rule._badgeBg = colors.length > 1 ? `linear-gradient(90deg, ${colors.join(', ')})` : rule._accentColor;
+        rule._badgeColor = rule._textColor === "inherit" || rule._textColor === "" ? "white" : rule._textColor;
+
+        // Generate class-based CSS rule
+        dynamicCss += `
+.${rule._class} {
+    --eh-bg: ${rule._primaryColor} !important;
+    --eh-bg-image: ${rule._bgImage} !important;
+    --eh-text: ${rule._textColor} !important;
+    --eh-accent: ${rule._accentColor} !important;
+}`;
 
         let hasIndexedSender = false;
         if (rule._hasSenders) {
@@ -614,78 +648,19 @@ const _generalRules = [];
             }
         }
 
-        // If rule has subjects, contents, or non-email sender strings, keep in general list
         if (rule._hasSubjects || rule._hasContents || !hasIndexedSender) {
             _generalRules.push(rule);
         }
     }
+
+    // Inject compiled stylesheet once for high-performance class-based styling
+    const styleEl = document.createElement('style');
+    styleEl.id = 'eh-dynamic-rules';
+    styleEl.textContent = dynamicCss;
+    (document.head || document.documentElement).appendChild(styleEl);
 })();
 
-// ---------------- 2. DATA EXTRACTION ----------------
-function extractEmailData(row) {
-    let senderEl = row.querySelector('[email]');
-    let senderEmail = senderEl ? senderEl.getAttribute('email').toLowerCase() : "";
-
-    let snippetEl = row.querySelector('.y2');
-    let snippet = snippetEl ? snippetEl.textContent.toLowerCase() : "";
-
-    let subjectEl = row.querySelector('.bog');
-    let subject = "";
-    if (subjectEl) {
-        const badge = row.querySelector('.custom-badge');
-        if (badge && subjectEl.contains(badge)) {
-            subject = subjectEl.textContent.replace(badge.textContent, '').trim().toLowerCase();
-        } else {
-            subject = subjectEl.textContent.trim().toLowerCase();
-        }
-    }
-
-    return { senderEmail, subject, snippet };
-}
-
-// ---------------- 3. CLASSIFICATION LOGIC ----------------
-// O(1) hash lookups first, then fallback to general rules
-function getEmailCategory(data) {
-    const email = data.senderEmail;
-    if (email) {
-        // Priority 1a: Exact email match O(1)
-        const exactMatch = _exactSenderMap.get(email);
-        if (exactMatch) return exactMatch;
-
-        // Priority 1b: Domain match O(1)
-        const atIdx = email.indexOf('@');
-        if (atIdx !== -1) {
-            const domain = email.slice(atIdx);
-            const domainMatch = _domainSenderMap.get(domain);
-            if (domainMatch) return domainMatch;
-        }
-    }
-
-    // Priority 2: Fallback general rules (senders, subjects, contents)
-    for (let i = 0; i < _generalRules.length; i++) {
-        const rule = _generalRules[i];
-        if (rule._hasSenders && rule._senders.some(s => email.includes(s))) return rule;
-        if (rule._hasSubjects && rule._subjects.some(s => data.subject.includes(s))) return rule;
-        if (rule._hasContents && rule._contents.some(s => data.snippet.includes(s))) return rule;
-    }
-    return null;
-}
-
-function getRuleBackgroundColors(rule) {
-    if (Array.isArray(rule.backgroundColors) && rule.backgroundColors.length) {
-        return rule.backgroundColors;
-    }
-    if (rule.backgroundColor) {
-        return [rule.backgroundColor];
-    }
-    return ["transparent"];
-}
-
-function getSolidColor(color) {
-    return color && color.length >= 7 ? color.substring(0, 7) : color;
-}
-
-// ---------------- 4. HIGHLIGHT FUNCTION ----------------
+// ---------------- 2. HIGHLIGHT FUNCTION ----------------
 // Template node for badge cloning
 const _badgeTemplate = document.createElement('span');
 _badgeTemplate.className = 'custom-badge-group';
@@ -722,23 +697,74 @@ function highlightEmails() {
             }
         }
 
-        const emailData = extractEmailData(row);
-        const fingerprint = emailData.senderEmail + '	' + emailData.subject;
+        // 2. LAZY TWO-TIER EXTRACTION & MATCHING
+        const senderEl = row.querySelector('[email]');
+        const senderEmail = senderEl ? senderEl.getAttribute('email').toLowerCase() : "";
+
+        // Query subject once (needed for badge positioning and row fingerprint)
+        const subjectEl = row.querySelector('.bog');
+        let subject = "";
+        if (subjectEl) {
+            const badge = row.querySelector('.custom-badge');
+            if (badge && subjectEl.contains(badge)) {
+                subject = subjectEl.textContent.replace(badge.textContent, '').trim().toLowerCase();
+            } else {
+                subject = subjectEl.textContent.trim().toLowerCase();
+            }
+        }
+
+        // Priority 1: Fast O(1) sender hash lookup
+        let matchedRule = null;
+        if (senderEmail) {
+            matchedRule = _exactSenderMap.get(senderEmail);
+            if (!matchedRule) {
+                const atIdx = senderEmail.indexOf('@');
+                if (atIdx !== -1) {
+                    matchedRule = _domainSenderMap.get(senderEmail.slice(atIdx));
+                }
+            }
+        }
+
+        // Priority 2: Fallback general rules (checks subjects first, lazily fetches snippet only if needed)
+        if (!matchedRule) {
+            let snippet = null;
+            for (let j = 0; j < _generalRules.length; j++) {
+                const rule = _generalRules[j];
+                if (rule._hasSenders && rule._senders.some(s => senderEmail.includes(s))) {
+                    matchedRule = rule;
+                    break;
+                }
+                if (rule._hasSubjects && rule._subjects.some(s => subject.includes(s))) {
+                    matchedRule = rule;
+                    break;
+                }
+                if (rule._hasContents) {
+                    if (snippet === null) {
+                        const snippetEl = row.querySelector('.y2');
+                        snippet = snippetEl ? snippetEl.textContent.toLowerCase() : "";
+                    }
+                    if (rule._contents.some(s => snippet.includes(s))) {
+                        matchedRule = rule;
+                        break;
+                    }
+                }
+            }
+        }
+
+        const fingerprint = senderEmail + '\t' + subject;
         const isAlreadyKnown = _knownRowFingerprints.has(fingerprint);
         const hasHighlightedAttr = row.dataset.ehHighlighted === 'true';
         const hasRowClass = row.classList.contains('eh-row');
 
-        const matchedRule = getEmailCategory(emailData);
-
         if (!matchedRule) {
             if (hasRowClass || hasHighlightedAttr) {
                 row.classList.remove('eh-row', 'eh-animate');
+                if (row.dataset.ehClass) {
+                    row.classList.remove(row.dataset.ehClass);
+                    delete row.dataset.ehClass;
+                }
                 delete row.dataset.ehHighlighted;
                 delete row.dataset.ehFp;
-                row.style.removeProperty('--eh-bg');
-                row.style.removeProperty('--eh-bg-image');
-                row.style.removeProperty('--eh-text');
-                row.style.removeProperty('--eh-accent');
                 row.style.removeProperty('--eh-stagger');
                 const oldBadge = row.querySelector('.custom-badge-group');
                 if (oldBadge) oldBadge.remove();
@@ -747,17 +773,13 @@ function highlightEmails() {
             continue;
         }
 
-        const colors = getRuleBackgroundColors(matchedRule);
-        const primaryColor = colors[0];
-        const accentColor = getSolidColor(primaryColor);
-
-        row.style.setProperty('--eh-bg', primaryColor);
-        row.style.setProperty('--eh-bg-image', colors.length > 1 ? `linear-gradient(90deg, ${colors.join(", ")})` : 'none');
-        row.style.setProperty('--eh-text', matchedRule.textColor);
-        row.style.setProperty('--eh-accent', accentColor);
-
+        // 3. APPLY CLASS-BASED STYLING (Replaces 4 inline style.setProperty calls)
+        if (row.dataset.ehClass && row.dataset.ehClass !== matchedRule._class) {
+            row.classList.remove(row.dataset.ehClass);
+        }
+        row.dataset.ehClass = matchedRule._class;
         row.dataset.ehHighlighted = 'true';
-        row.classList.add('eh-row');
+        row.classList.add('eh-row', matchedRule._class);
 
         if (!isAlreadyKnown) {
             row.style.setProperty('--eh-stagger', `${Math.min(newRowCount * 4, 60)}ms`);
@@ -769,16 +791,13 @@ function highlightEmails() {
             row.classList.remove('eh-animate');
         }
 
-        // Add classification badge using template cloning
-        const subjectEl = row.querySelector('.bog');
+        // 4. ADD BADGE USING PRE-COMPUTED DATA & CLONING
         if (subjectEl && !row.querySelector('.custom-badge-group')) {
             const badgeGroup = _badgeTemplate.cloneNode(true);
             const badge = badgeGroup.firstChild;
-            badge.textContent = matchedRule.id.charAt(0).toUpperCase() + matchedRule.id.slice(1).toLowerCase();
-            badge.style.background = colors.length > 1
-                ? `linear-gradient(90deg, ${colors.join(', ')})`
-                : accentColor;
-            badge.style.color = matchedRule.textColor === "inherit" || matchedRule.textColor === "" ? "white" : matchedRule.textColor;
+            badge.textContent = matchedRule._badgeText;
+            badge.style.background = matchedRule._badgeBg;
+            badge.style.color = matchedRule._badgeColor;
 
             if (subjectEl.parentNode) {
                 subjectEl.parentNode.insertBefore(badgeGroup, subjectEl);
@@ -792,13 +811,17 @@ function highlightEmails() {
     }
 }
 
-// ---------------- 5. OPENED EMAIL HIGHLIGHTER ----------------
+// ---------------- 3. OPENED EMAIL HIGHLIGHTER ----------------
 function highlightOpenedEmail() {
-    let header = document.querySelector('.ha');
+    // Route guard: only check if URL hash indicates an opened email thread (contains a '/')
+    const hash = location.hash;
+    if (!hash || !hash.includes('/')) return;
+
+    const header = document.querySelector('.ha');
     if (!header || header.dataset.processed) return;
 
-    let subject = document.querySelector('h2')?.textContent || "";
-    let text = subject.toLowerCase();
+    const subject = document.querySelector('h2')?.textContent || "";
+    const text = subject.toLowerCase();
 
     if (text.includes("internship")) header.style.backgroundColor = "#d4edda";
     else if (text.includes("holiday") || text.includes("announcement")) header.style.backgroundColor = "#fff3cd";
@@ -807,7 +830,7 @@ function highlightOpenedEmail() {
     header.dataset.processed = "true";
 }
 
-// ---------------- 6. OBSERVERS & DETECTORS ----------------
+// ---------------- 4. OBSERVERS & DETECTORS ----------------
 let _rafPending = false;
 let _emailObserver = null;
 let _currentObserverTarget = null;
@@ -825,7 +848,6 @@ function scheduleHighlight() {
 
 function updateObserverTarget() {
     if (!_emailObserver) return;
-    // Prefer scoping directly to Gmail's main email pane if mounted
     const target = document.querySelector('div[role="main"]') || document.body;
     if (target !== _currentObserverTarget) {
         _currentObserverTarget = target;
@@ -836,7 +858,6 @@ function updateObserverTarget() {
 
 function observeEmailChanges() {
     _emailObserver = new MutationObserver((mutations) => {
-        // Prevent feedback loops: ignore mutations triggered exclusively by internal badges
         let hasExternalChange = false;
         for (let i = 0; i < mutations.length; i++) {
             const added = mutations[i].addedNodes;
