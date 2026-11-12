@@ -333,7 +333,7 @@ const classificationRules = [
         id: "moneycontrol",
         backgroundColors: ["#59ab37cc", "#086aa4cc"],
         textColor: "#ffffff",
-        senders: ["@moneycontrol.com"],
+        senders: ["@moneycontrol.com", "@mailer.moneycontrol.com"],
         subjects: [],
         contents: []
     },
